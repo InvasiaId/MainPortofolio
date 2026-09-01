@@ -1,0 +1,115 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Profile {
+  id        Int      @id @default(autoincrement())
+  name      String   @default("Your Name")
+  tagline   String   @default("Full-Stack Developer & Designer")
+  bio       String   @default("Write your bio here...")
+  photoUrl  String?
+  resumeUrl String?
+  updatedAt DateTime @updatedAt
+
+  @@map("profiles")
+}
+
+model AdminUser {
+  id           Int    @id @default(autoincrement())
+  email        String @unique
+  passwordHash String
+
+  @@map("admin_users")
+}
+
+model SocialLink {
+  id           Int    @id @default(autoincrement())
+  platform     String
+  url          String
+  icon         String
+  displayOrder Int    @default(0)
+
+  @@map("social_links")
+}
+
+model Skill {
+  id           Int    @id @default(autoincrement())
+  name         String
+  icon         String
+  category     String
+  proficiency  Int    @default(50)
+  displayOrder Int    @default(0)
+
+  @@map("skills")
+}
+
+model Project {
+  id           Int             @id @default(autoincrement())
+  title        String
+  category     ProjectCategory
+  description  String
+  techStack    String[]
+  projectUrl   String?
+  repoUrl      String?
+  model3dUrl   String?
+  featured     Boolean         @default(false)
+  displayOrder Int             @default(0)
+  createdAt    DateTime        @default(now())
+  media        ProjectMedia[]
+
+  @@map("projects")
+}
+
+model ProjectMedia {
+  id           Int       @id @default(autoincrement())
+  projectId    Int
+  project      Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  mediaUrl     String
+  mediaType    MediaType
+  displayOrder Int       @default(0)
+
+  @@map("project_media")
+}
+
+model PageView {
+  id        Int      @id @default(autoincrement())
+  page      String
+  referrer  String?
+  country   String?
+  device    String?
+  browser   String?
+  sessionId String?
+  createdAt DateTime @default(now())
+
+  @@map("page_views")
+}
+
+model ErrorLog {
+  id           Int      @id @default(autoincrement())
+  errorMessage String
+  errorStack   String?
+  page         String?
+  userAgent    String?
+  createdAt    DateTime @default(now())
+
+  @@map("error_logs")
+}
+
+enum ProjectCategory {
+  website
+  android
+  threeD
+  video
+  graphic
+  hardware
+}
+
+enum MediaType {
+  image
+  video
+}
