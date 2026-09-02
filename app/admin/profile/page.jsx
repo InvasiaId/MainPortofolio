@@ -13,10 +13,10 @@ const PLATFORMS = [
 ];
 
 export default function AdminProfile() {
-  const [profile, setProfile] = useState({ name: '', tagline: '', bio: '', photoUrl: '' });
+  const [profile, setProfile] = useState({ name: '', tagline: '', bio: '', photoUrl: '', heroPhotoUrl: '' });
   const [socialLinks, setSocialLinks] = useState([]);
   const [skills, setSkills] = useState([]);
-  const [newSkill, setNewSkill] = useState({ name: '', icon: '', category: '', proficiency: 50 });
+  const [newSkill, setNewSkill] = useState({ name: '', category: 'Frontend', proficiency: 50 });
   const [saving, setSaving] = useState('');
   const [activeTab, setActiveTab] = useState('profile');
   const [toast, setToast] = useState(null);
@@ -97,7 +97,21 @@ export default function AdminProfile() {
     }
   };
 
-  const handlePhotoUpload = async (file) => {
+  const updateSkillLocal = (id, field, value) => {
+    setSkills(skills.map(s => s.id === id ? { ...s, [field]: value } : s));
+  };
+
+  const saveSkill = async (skill) => {
+    const res = await fetch('/api/skills', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(skill),
+    });
+    if (res.ok) showToast('Skill updated!');
+    else showToast('Failed to update skill', 'error');
+  };
+
+  const handlePhotoUpload = async (file, field = 'photoUrl') => {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('folder', 'profile');
@@ -106,7 +120,7 @@ export default function AdminProfile() {
     const res = await fetch('/api/upload', { method: 'POST', body: formData });
     const data = await res.json();
     if (res.ok) {
-      setProfile({ ...profile, photoUrl: data.url });
+      setProfile(prev => ({ ...prev, [field]: data.url }));
       showToast('Photo uploaded! Remember to click Save Profile.');
     } else {
       showToast(data.error || 'Photo upload failed', 'error');
@@ -140,20 +154,41 @@ export default function AdminProfile() {
       {/* Profile Tab */}
       {activeTab === 'profile' && (
         <div className="glass" style={s.card}>
-          <div style={s.field}>
-            <label style={s.label}>Photo</label>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-              <div style={{ width: '80px', height: '80px', borderRadius: '50%', overflow: 'hidden', border: '2px solid var(--border-glass)', background: 'var(--bg-primary)' }}>
-                {profile.photoUrl ? (
-                  <img src={profile.photoUrl} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                ) : (
-                  <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem' }}>👤</div>
-                )}
+          <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
+            {/* Hero Photo */}
+            <div style={{ ...s.field, flex: 1 }}>
+              <label style={s.label}>Hero Photo (Beranda)</label>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                <div style={{ width: '80px', height: '80px', borderRadius: '12px', overflow: 'hidden', border: '2px solid var(--border-glass)', background: 'var(--bg-primary)' }}>
+                  {profile.heroPhotoUrl ? (
+                    <img src={profile.heroPhotoUrl} alt="Hero" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  ) : (
+                    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem' }}>🖼️</div>
+                  )}
+                </div>
+                <label className="btn btn-outline" style={{ cursor: 'pointer', fontSize: '0.85rem' }}>
+                  <FaUpload /> Upload Hero
+                  <input type="file" accept="image/*" hidden onChange={(e) => e.target.files[0] && handlePhotoUpload(e.target.files[0], 'heroPhotoUrl')} />
+                </label>
               </div>
-              <label className="btn btn-outline" style={{ cursor: 'pointer', fontSize: '0.85rem' }}>
-                <FaUpload /> Upload Photo
-                <input type="file" accept="image/*" hidden onChange={(e) => e.target.files[0] && handlePhotoUpload(e.target.files[0])} />
-              </label>
+            </div>
+
+            {/* About Photo */}
+            <div style={{ ...s.field, flex: 1 }}>
+              <label style={s.label}>About Photo (Profil)</label>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                <div style={{ width: '80px', height: '80px', borderRadius: '12px', overflow: 'hidden', border: '2px solid var(--border-glass)', background: 'var(--bg-primary)' }}>
+                  {profile.photoUrl ? (
+                    <img src={profile.photoUrl} alt="About" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  ) : (
+                    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem' }}>👤</div>
+                  )}
+                </div>
+                <label className="btn btn-outline" style={{ cursor: 'pointer', fontSize: '0.85rem' }}>
+                  <FaUpload /> Upload About
+                  <input type="file" accept="image/*" hidden onChange={(e) => e.target.files[0] && handlePhotoUpload(e.target.files[0], 'photoUrl')} />
+                </label>
+              </div>
             </div>
           </div>
 
@@ -212,14 +247,11 @@ export default function AdminProfile() {
       {/* Skills Tab */}
       {activeTab === 'skills' && (
         <div className="glass" style={s.card}>
+          <h3 style={{ fontSize: '1rem', fontWeight: 600 }}>Add New Skill</h3>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'end', flexWrap: 'wrap' }}>
             <div style={{ ...s.field, flex: '1 1 150px' }}>
               <label style={s.label}>Name</label>
-              <input style={s.input} value={newSkill.name} onChange={(e) => setNewSkill({ ...newSkill, name: e.target.value })} placeholder="React" />
-            </div>
-            <div style={{ ...s.field, flex: '0 0 80px' }}>
-              <label style={s.label}>Icon</label>
-              <input style={s.input} value={newSkill.icon} onChange={(e) => setNewSkill({ ...newSkill, icon: e.target.value })} placeholder="⚛️" />
+              <input style={s.input} value={newSkill.name} onChange={(e) => setNewSkill({ ...newSkill, name: e.target.value })} placeholder="e.g. React" />
             </div>
             <div style={{ ...s.field, flex: '1 1 120px' }}>
               <label style={s.label}>Category</label>
@@ -229,20 +261,23 @@ export default function AdminProfile() {
               <label style={s.label}>Level %</label>
               <input type="number" style={s.input} value={newSkill.proficiency} onChange={(e) => setNewSkill({ ...newSkill, proficiency: parseInt(e.target.value) || 0 })} min="0" max="100" />
             </div>
-            <button onClick={addSkill} className="btn btn-primary" style={{ padding: '12px 20px' }}>
+            <button onClick={addSkill} className="btn btn-primary" style={{ padding: '12px 20px', height: '44px' }}>
               <FaPlus />
             </button>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '16px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '24px' }}>
+            <h3 style={{ fontSize: '1rem', fontWeight: 600 }}>Manage Skills</h3>
             {skills.map((skill) => (
-              <div key={skill.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', background: 'var(--bg-glass)', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
-                <span>{skill.icon || '⚡'}</span>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>{skill.name}</div>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{skill.category} • {skill.proficiency}%</div>
+              <div key={skill.id} style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', padding: '12px', background: 'var(--bg-glass)', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
+                <input style={{ ...s.input, flex: '1 1 120px', padding: '8px 12px' }} value={skill.name} onChange={(e) => updateSkillLocal(skill.id, 'name', e.target.value)} onBlur={() => saveSkill(skill)} />
+                <input style={{ ...s.input, flex: '1 1 120px', padding: '8px 12px' }} value={skill.category} onChange={(e) => updateSkillLocal(skill.id, 'category', e.target.value)} onBlur={() => saveSkill(skill)} />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flex: '0 0 80px' }}>
+                  <input type="number" style={{ ...s.input, width: '60px', padding: '8px' }} value={skill.proficiency} onChange={(e) => updateSkillLocal(skill.id, 'proficiency', parseInt(e.target.value) || 0)} onBlur={() => saveSkill(skill)} />
+                  <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>%</span>
                 </div>
-                <button onClick={() => deleteSkill(skill.id)} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '4px' }}>
+                
+                <button onClick={() => deleteSkill(skill.id)} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <FaTimes />
                 </button>
               </div>

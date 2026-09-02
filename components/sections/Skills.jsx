@@ -59,7 +59,6 @@ export default function Skills({ skills }) {
             <div key={skill.id} className="skill-card glass">
               <div className="skill-header">
                 <div className="skill-name">
-                  <span className="skill-icon">{skill.icon || '⚡'}</span>
                   {skill.name}
                 </div>
                 <span className="skill-percentage">{skill.proficiency}%</span>

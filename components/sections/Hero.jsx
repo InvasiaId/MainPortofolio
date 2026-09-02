@@ -159,8 +159,8 @@ export default function Hero({ profile, socialLinks }) {
           </div>
           <div className="hero-image">
             <div className="hero-image-wrapper">
-              {profile?.photoUrl ? (
-                <img src={profile.photoUrl} alt={profile.name || 'Profile'} />
+              {profile?.heroPhotoUrl ? (
+                <img src={profile.heroPhotoUrl} alt={profile.name || 'Profile'} />
               ) : (
                 <div className="hero-image-placeholder">👤</div>
               )}
