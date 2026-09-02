@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { FaPlus, FaEdit, FaTrash, FaTimes, FaCloudUploadAlt } from 'react-icons/fa';
+import Toast from '@/components/ui/Toast';
 
 const CATEGORIES = [
   { value: 'website', label: '🌐 Website' },
@@ -36,6 +37,7 @@ const Dropzone = ({ type, onUpload, label, accept }) => {
       const data = await res.json();
       if (res.ok && data.url) {
         onUpload(data.url);
+        // Note: the parent handles the success toast since it manages overall state
       } else {
         alert(data.error || 'Upload failed');
       }
@@ -96,6 +98,9 @@ export default function AdminProjects() {
   const [form, setForm] = useState(emptyProject);
   const [techInput, setTechInput] = useState('');
   const [filterCat, setFilterCat] = useState('all');
+  const [toast, setToast] = useState(null);
+
+  const showToast = (message, type = 'success') => setToast({ message, type });
 
   const fetchProjects = () => {
     fetch('/api/projects').then((r) => r.json()).then(setProjects).catch(() => {});
@@ -107,7 +112,7 @@ export default function AdminProjects() {
     const method = editing === 'new' ? 'POST' : 'PUT';
     
     // Extract new unsaved media (ones without id) to be sent on POST
-    const body = { ...form };
+    const body = editing === 'new' ? form : { id: editing.id, ...form };
 
     const res = await fetch('/api/projects', {
       method,
@@ -116,23 +121,31 @@ export default function AdminProjects() {
     });
 
     if (res.ok) {
-      // For existing projects where we just pushed new media directly to /api/media 
-      // the fetching will update it. But just in case:
       fetchProjects();
       setEditing(null);
       setForm(emptyProject);
+      showToast(method === 'POST' ? 'Project created successfully!' : 'Project updated successfully!');
+    } else {
+      const err = await res.json();
+      showToast(err.error || 'Failed to save project', 'error');
     }
   };
 
   const handleDelete = async (id) => {
     if (!confirm('Delete this project?')) return;
-    await fetch(`/api/projects?id=${id}`, { method: 'DELETE' });
-    fetchProjects();
+    const res = await fetch(`/api/projects?id=${id}`, { method: 'DELETE' });
+    if (res.ok) {
+      fetchProjects();
+      showToast('Project deleted successfully!');
+    } else {
+      showToast('Failed to delete project', 'error');
+    }
   };
 
   const handleUploadNewMedia = async (url, type) => {
     if (editing === 'new') {
       setForm({ ...form, media: [...form.media, { mediaUrl: url, mediaType: type }] });
+      showToast('Media uploaded! It will be saved when you create the project.');
     } else {
       // For existing project, directly save it to DB
       const res = await fetch('/api/media', {
@@ -144,6 +157,9 @@ export default function AdminProjects() {
         const newMedia = await res.json();
         setForm({ ...form, media: [...form.media, newMedia] });
         fetchProjects();
+        showToast('Media added to project successfully!');
+      } else {
+        showToast('Media uploaded but failed to save to project.', 'error');
       }
     }
   };
@@ -151,10 +167,16 @@ export default function AdminProjects() {
   const handleDeleteMedia = async (index, mediaId) => {
     if (editing === 'new' || !mediaId) {
       setForm({ ...form, media: form.media.filter((_, i) => i !== index) });
+      showToast('Draft media removed');
     } else {
-      await fetch(`/api/media?id=${mediaId}`, { method: 'DELETE' });
-      setForm({ ...form, media: form.media.filter(m => m.id !== mediaId) });
-      fetchProjects();
+      const res = await fetch(`/api/media?id=${mediaId}`, { method: 'DELETE' });
+      if (res.ok) {
+        setForm({ ...form, media: form.media.filter(m => m.id !== mediaId) });
+        fetchProjects();
+        showToast('Media deleted successfully!');
+      } else {
+        showToast('Failed to delete media', 'error');
+      }
     }
   };
 
@@ -298,6 +320,7 @@ export default function AdminProjects() {
             {editing === 'new' ? 'Create Project' : 'Save Changes'}
           </button>
         </div>
+        {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
       </div>
     );
   }
@@ -355,6 +378,7 @@ export default function AdminProjects() {
           ))}
         </div>
       )}
+      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
     </div>
   );
 }

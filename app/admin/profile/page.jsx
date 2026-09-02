@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { FaSave, FaPlus, FaTimes, FaUpload } from 'react-icons/fa';
+import Toast from '@/components/ui/Toast';
 
 const PLATFORMS = [
   { value: 'linkedin', label: 'LinkedIn', icon: '🔗' },
@@ -18,6 +19,9 @@ export default function AdminProfile() {
   const [newSkill, setNewSkill] = useState({ name: '', icon: '', category: '', proficiency: 50 });
   const [saving, setSaving] = useState('');
   const [activeTab, setActiveTab] = useState('profile');
+  const [toast, setToast] = useState(null);
+
+  const showToast = (message, type = 'success') => setToast({ message, type });
 
   useEffect(() => {
     fetch('/api/profile').then((r) => r.json()).then((data) => {
@@ -29,22 +33,26 @@ export default function AdminProfile() {
 
   const saveProfile = async () => {
     setSaving('profile');
-    await fetch('/api/profile', {
+    const res = await fetch('/api/profile', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ type: 'profile', ...profile }),
     });
     setSaving('');
+    if (res.ok) showToast('Profile saved successfully!');
+    else showToast('Failed to save profile', 'error');
   };
 
   const saveSocialLinks = async () => {
     setSaving('social');
-    await fetch('/api/profile', {
+    const res = await fetch('/api/profile', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ type: 'social_links', links: socialLinks }),
     });
     setSaving('');
+    if (res.ok) showToast('Social links saved successfully!');
+    else showToast('Failed to save social links', 'error');
   };
 
   const addSocialLink = () => {
@@ -73,12 +81,20 @@ export default function AdminProfile() {
       const skill = await res.json();
       setSkills([...skills, skill]);
       setNewSkill({ name: '', icon: '', category: '', proficiency: 50 });
+      showToast('Skill added successfully!');
+    } else {
+      showToast('Failed to add skill', 'error');
     }
   };
 
   const deleteSkill = async (id) => {
-    await fetch(`/api/skills?id=${id}`, { method: 'DELETE' });
-    setSkills(skills.filter((s) => s.id !== id));
+    const res = await fetch(`/api/skills?id=${id}`, { method: 'DELETE' });
+    if (res.ok) {
+      setSkills(skills.filter((s) => s.id !== id));
+      showToast('Skill deleted!');
+    } else {
+      showToast('Failed to delete skill', 'error');
+    }
   };
 
   const handlePhotoUpload = async (file) => {
@@ -89,7 +105,12 @@ export default function AdminProfile() {
 
     const res = await fetch('/api/upload', { method: 'POST', body: formData });
     const data = await res.json();
-    if (res.ok) setProfile({ ...profile, photoUrl: data.url });
+    if (res.ok) {
+      setProfile({ ...profile, photoUrl: data.url });
+      showToast('Photo uploaded! Remember to click Save Profile.');
+    } else {
+      showToast(data.error || 'Photo upload failed', 'error');
+    }
   };
 
   const TABS = [
@@ -229,6 +250,8 @@ export default function AdminProfile() {
           </div>
         </div>
       )}
+
+      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
     </div>
   );
 }

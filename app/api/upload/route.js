@@ -24,6 +24,7 @@ export async function POST(request) {
 
     return Response.json({ url }, { status: 201 });
   } catch (error) {
-    return Response.json({ error: 'Upload failed' }, { status: 500 });
+    console.error('Upload Error:', error);
+    return Response.json({ error: `Upload failed: ${error.message}` }, { status: 500 });
   }
 }
