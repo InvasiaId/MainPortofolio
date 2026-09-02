@@ -24,14 +24,23 @@ export async function PUT(request) {
 
     if (type === 'profile') {
       const sanitized = sanitizeObject(data);
+      const updateData = {
+        name: sanitized.name,
+        tagline: sanitized.tagline,
+        bio: sanitized.bio,
+        photoUrl: sanitized.photoUrl || null,
+        heroPhotoUrl: sanitized.heroPhotoUrl || null,
+        resumeUrl: sanitized.resumeUrl || null
+      };
+
       let profile = await prisma.profile.findFirst();
       if (profile) {
         profile = await prisma.profile.update({
           where: { id: profile.id },
-          data: sanitized,
+          data: updateData,
         });
       } else {
-        profile = await prisma.profile.create({ data: sanitized });
+        profile = await prisma.profile.create({ data: updateData });
       }
       return Response.json(profile);
     }
