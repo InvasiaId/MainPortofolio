@@ -57,6 +57,11 @@ export async function PUT(request) {
 
     return Response.json({ error: 'Invalid type' }, { status: 400 });
   } catch (error) {
-    return Response.json({ error: 'Failed to update profile' }, { status: 500 });
+    console.error("Profile API Error Vercel:", error);
+    return Response.json({ 
+      error: 'Failed to update profile', 
+      details: error.message, 
+      stack: error.stack 
+    }, { status: 500 });
   }
 }
