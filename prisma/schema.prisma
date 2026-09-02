@@ -8,13 +8,14 @@ datasource db {
 }
 
 model Profile {
-  id        Int      @id @default(autoincrement())
-  name      String   @default("Your Name")
-  tagline   String   @default("Full-Stack Developer & Designer")
-  bio       String   @default("Write your bio here...")
-  photoUrl  String?
-  resumeUrl String?
-  updatedAt DateTime @updatedAt
+  id           Int      @id @default(autoincrement())
+  name         String   @default("Your Name")
+  tagline      String   @default("Full-Stack Developer & Designer")
+  bio          String   @default("Write your bio here...")
+  photoUrl     String?
+  heroPhotoUrl String?
+  resumeUrl    String?
+  updatedAt    DateTime @updatedAt
 
   @@map("profiles")
 }
