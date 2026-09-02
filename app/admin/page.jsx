@@ -25,7 +25,7 @@ export default function AdminDashboard() {
   }, []);
 
   const cards = [
-    { label: 'Total Projects', value: stats?.totalProjects || 0, icon: FaProjectDiagram, color: '#7c3aed' },
+    { label: 'Total Projects', value: stats?.totalProjects || 0, icon: FaProjectDiagram, color: '#D6FF01' },
     { label: 'Categories', value: Object.keys(stats?.categories || {}).length, icon: FaTh, color: '#3b82f6' },
     { label: 'Total Views', value: stats?.totalViews || 0, icon: FaEye, color: '#10b981' },
     { label: 'Today Views', value: stats?.todayViews || 0, icon: FaExclamationTriangle, color: '#f59e0b' },

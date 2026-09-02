@@ -55,6 +55,13 @@ export async function POST(request) {
         model3dUrl: data.model3dUrl || null,
         featured: data.featured || false,
         displayOrder: data.displayOrder || 0,
+        media: {
+          create: Array.isArray(data.media) ? data.media.map(m => ({
+            mediaUrl: m.mediaUrl,
+            mediaType: m.mediaType || 'image',
+            displayOrder: m.displayOrder || 0
+          })) : []
+        }
       },
       include: { media: true },
     });

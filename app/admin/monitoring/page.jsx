@@ -65,7 +65,7 @@ export default function AdminMonitoring() {
         <>
           {/* Stat Cards */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '28px' }}>
-            <StatCard label="Total Views" value={analytics?.totalViews || 0} icon={FaEye} color="#7c3aed" />
+            <StatCard label="Total Views" value={analytics?.totalViews || 0} icon={FaEye} color="#D6FF01" />
             <StatCard label="Today" value={analytics?.todayViews || 0} icon={FaEye} color="#3b82f6" />
             <StatCard label="Total Projects" value={analytics?.dbStats?.projectCount || 0} icon={FaDatabase} color="#10b981" />
             <StatCard label="Errors" value={errors.length} icon={FaExclamationTriangle} color="#ef4444" />

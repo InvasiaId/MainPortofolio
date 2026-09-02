@@ -160,7 +160,7 @@ const styles = {
   },
   navItemActive: {
     background: 'var(--gradient-subtle)',
-    color: 'var(--accent-purple)',
+    color: 'var(--accent)',
     fontWeight: 600,
   },
   logoutBtn: {

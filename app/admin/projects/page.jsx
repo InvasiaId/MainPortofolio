@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { FaPlus, FaEdit, FaTrash, FaTimes, FaUpload } from 'react-icons/fa';
+import { useState, useEffect, useCallback } from 'react';
+import { FaPlus, FaEdit, FaTrash, FaTimes, FaCloudUploadAlt } from 'react-icons/fa';
 
 const CATEGORIES = [
   { value: 'website', label: '🌐 Website' },
@@ -15,14 +15,86 @@ const CATEGORIES = [
 const emptyProject = {
   title: '', category: 'website', description: '', techStack: [],
   projectUrl: '', repoUrl: '', model3dUrl: '', featured: false, displayOrder: 0,
+  media: []
+};
+
+// Reusable Drag & Drop zone
+const Dropzone = ({ type, onUpload, label, accept }) => {
+  const [isDrag, setIsDrag] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const handleUpload = async (file) => {
+    if (!file) return;
+    setLoading(true);
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', 'projects');
+    formData.append('fileCategory', type);
+
+    try {
+      const res = await fetch('/api/upload', { method: 'POST', body: formData });
+      const data = await res.json();
+      if (res.ok && data.url) {
+        onUpload(data.url);
+      } else {
+        alert(data.error || 'Upload failed');
+      }
+    } catch {
+      alert('Network error during upload');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onDrop = (e) => {
+    e.preventDefault();
+    setIsDrag(false);
+    handleUpload(e.dataTransfer.files[0]);
+  };
+
+  return (
+    <div
+      onDragOver={(e) => { e.preventDefault(); setIsDrag(true); }}
+      onDragLeave={(e) => { e.preventDefault(); setIsDrag(false); }}
+      onDrop={onDrop}
+      style={{
+        border: `2px dashed ${isDrag ? 'var(--accent)' : 'var(--border-glass)'}`,
+        background: isDrag ? 'rgba(214,255,1,0.05)' : 'var(--bg-glass)',
+        padding: '24px',
+        borderRadius: '12px',
+        textAlign: 'center',
+        cursor: 'pointer',
+        transition: 'all 0.2s',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '8px'
+      }}
+    >
+      <input 
+        type="file" 
+        accept={accept} 
+        onChange={(e) => handleUpload(e.target.files[0])} 
+        style={{ display: 'none' }} 
+        id={`upload-${type}`}
+      />
+      <label htmlFor={`upload-${type}`} style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <FaCloudUploadAlt style={{ fontSize: '2rem', color: isDrag ? 'var(--accent)' : 'var(--text-muted)' }} />
+        <span style={{ fontSize: '0.9rem', marginTop: '8px', fontWeight: 600, color: 'var(--text-primary)' }}>
+          {loading ? 'Uploading...' : label}
+        </span>
+        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Drag & Drop or Click</span>
+      </label>
+    </div>
+  );
 };
 
 export default function AdminProjects() {
   const [projects, setProjects] = useState([]);
-  const [editing, setEditing] = useState(null); // null = list, 'new' = create, object = edit
+  const [editing, setEditing] = useState(null); 
   const [form, setForm] = useState(emptyProject);
   const [techInput, setTechInput] = useState('');
-  const [uploading, setUploading] = useState(false);
   const [filterCat, setFilterCat] = useState('all');
 
   const fetchProjects = () => {
@@ -33,7 +105,9 @@ export default function AdminProjects() {
 
   const handleSave = async () => {
     const method = editing === 'new' ? 'POST' : 'PUT';
-    const body = editing === 'new' ? form : { id: editing.id, ...form };
+    
+    // Extract new unsaved media (ones without id) to be sent on POST
+    const body = { ...form };
 
     const res = await fetch('/api/projects', {
       method,
@@ -42,6 +116,8 @@ export default function AdminProjects() {
     });
 
     if (res.ok) {
+      // For existing projects where we just pushed new media directly to /api/media 
+      // the fetching will update it. But just in case:
       fetchProjects();
       setEditing(null);
       setForm(emptyProject);
@@ -54,39 +130,32 @@ export default function AdminProjects() {
     fetchProjects();
   };
 
-  const handleUploadMedia = async (file, type = 'image') => {
-    setUploading(true);
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('folder', 'projects');
-    formData.append('fileCategory', type);
-
-    try {
-      const res = await fetch('/api/upload', { method: 'POST', body: formData });
-      const data = await res.json();
-      if (res.ok && data.url && editing && editing !== 'new') {
-        await fetch('/api/media', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ projectId: editing.id, mediaUrl: data.url, mediaType: type }),
-        });
+  const handleUploadNewMedia = async (url, type) => {
+    if (editing === 'new') {
+      setForm({ ...form, media: [...form.media, { mediaUrl: url, mediaType: type }] });
+    } else {
+      // For existing project, directly save it to DB
+      const res = await fetch('/api/media', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ projectId: editing.id, mediaUrl: url, mediaType: type }),
+      });
+      if (res.ok) {
+        const newMedia = await res.json();
+        setForm({ ...form, media: [...form.media, newMedia] });
         fetchProjects();
-        setEditing((prev) => {
-          const updated = projects.find((p) => p.id === prev.id);
-          return updated || prev;
-        });
       }
-      return data.url;
-    } catch {
-      return null;
-    } finally {
-      setUploading(false);
     }
   };
 
-  const handleDeleteMedia = async (mediaId) => {
-    await fetch(`/api/media?id=${mediaId}`, { method: 'DELETE' });
-    fetchProjects();
+  const handleDeleteMedia = async (index, mediaId) => {
+    if (editing === 'new' || !mediaId) {
+      setForm({ ...form, media: form.media.filter((_, i) => i !== index) });
+    } else {
+      await fetch(`/api/media?id=${mediaId}`, { method: 'DELETE' });
+      setForm({ ...form, media: form.media.filter(m => m.id !== mediaId) });
+      fetchProjects();
+    }
   };
 
   const addTech = () => {
@@ -112,12 +181,12 @@ export default function AdminProjects() {
       model3dUrl: project.model3dUrl || '',
       featured: project.featured,
       displayOrder: project.displayOrder,
+      media: project.media || []
     });
   };
 
   const filtered = filterCat === 'all' ? projects : projects.filter((p) => p.category === filterCat);
 
-  // === FORM VIEW ===
   if (editing) {
     return (
       <div>
@@ -178,8 +247,15 @@ export default function AdminProjects() {
 
           {form.category === 'threeD' && (
             <div style={s.field}>
-              <label style={s.label}>3D Model URL (.glb/.gltf)</label>
-              <input style={s.input} value={form.model3dUrl} onChange={(e) => setForm({ ...form, model3dUrl: e.target.value })} placeholder="URL or upload..." />
+              <label style={s.label}>3D Model Upload (.glb/.gltf)</label>
+              {form.model3dUrl ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', background: 'rgba(214,255,1,0.05)', border: '1px solid var(--accent)', borderRadius: '8px' }}>
+                  <span style={{ flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontSize: '0.85rem' }}>{form.model3dUrl}</span>
+                  <button onClick={() => setForm({ ...form, model3dUrl: '' })} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer' }}><FaTimes /></button>
+                </div>
+              ) : (
+                <Dropzone type="model" label="Upload 3D Model (.glb, .gltf)" accept=".glb,.gltf" onUpload={(url) => setForm({ ...form, model3dUrl: url })} />
+              )}
             </div>
           )}
 
@@ -193,41 +269,34 @@ export default function AdminProjects() {
             <input type="number" style={s.input} value={form.displayOrder} onChange={(e) => setForm({ ...form, displayOrder: parseInt(e.target.value) || 0 })} />
           </div>
 
+          {/* Media Upload available for ALL states (new & existing) */}
+          <div style={{ marginTop: '24px', paddingTop: '24px', borderTop: '1px solid var(--border-glass)' }}>
+            <h3 style={{ fontWeight: 700, marginBottom: '16px' }}>Photos & Videos Gallery</h3>
+            
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
+              <Dropzone type="image" label="Upload Photo" accept="image/*" onUpload={(url) => handleUploadNewMedia(url, 'image')} />
+              <Dropzone type="video" label="Upload Video" accept="video/mp4,video/webm" onUpload={(url) => handleUploadNewMedia(url, 'video')} />
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '12px' }}>
+              {(form.media || []).map((m, i) => (
+                <div key={m.id || i} style={{ position: 'relative', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-glass)' }}>
+                  {m.mediaType === 'image' ? (
+                     <img src={m.mediaUrl} alt="" style={{ width: '100%', height: '100px', objectFit: 'cover' }} />
+                  ) : (
+                     <div style={{ width: '100%', height: '100px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-primary)', color: 'var(--text-muted)' }}>🎬 Video</div>
+                  )}
+                  <button onClick={() => handleDeleteMedia(i, m.id)} style={{ position: 'absolute', top: '4px', right: '4px', width: '24px', height: '24px', borderRadius: '50%', border: 'none', background: 'rgba(239,68,68,0.8)', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.6rem' }}>
+                    <FaTimes />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+
           <button onClick={handleSave} className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', marginTop: '16px' }}>
             {editing === 'new' ? 'Create Project' : 'Save Changes'}
           </button>
-
-          {/* Media Upload (only available after project is created) */}
-          {editing !== 'new' && (
-            <div style={{ marginTop: '32px', paddingTop: '24px', borderTop: '1px solid var(--border-glass)' }}>
-              <h3 style={{ fontWeight: 700, marginBottom: '16px' }}>Media</h3>
-              <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
-                <label className="btn btn-outline" style={{ cursor: 'pointer', padding: '8px 16px', fontSize: '0.85rem' }}>
-                  <FaUpload /> Upload Image
-                  <input type="file" accept="image/*" hidden onChange={(e) => e.target.files[0] && handleUploadMedia(e.target.files[0], 'image')} />
-                </label>
-                <label className="btn btn-outline" style={{ cursor: 'pointer', padding: '8px 16px', fontSize: '0.85rem' }}>
-                  <FaUpload /> Upload Video
-                  <input type="file" accept="video/*" hidden onChange={(e) => e.target.files[0] && handleUploadMedia(e.target.files[0], 'video')} />
-                </label>
-              </div>
-              {uploading && <p style={{ color: 'var(--accent-purple)', fontSize: '0.85rem' }}>Uploading...</p>}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: '12px' }}>
-                {(editing.media || []).map((m) => (
-                  <div key={m.id} style={{ position: 'relative', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-glass)' }}>
-                    {m.mediaType === 'image' ? (
-                      <img src={m.mediaUrl} alt="" style={{ width: '100%', height: '80px', objectFit: 'cover' }} />
-                    ) : (
-                      <div style={{ width: '100%', height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-primary)', color: 'var(--text-muted)' }}>🎬</div>
-                    )}
-                    <button onClick={() => handleDeleteMedia(m.id)} style={{ position: 'absolute', top: '4px', right: '4px', width: '24px', height: '24px', borderRadius: '50%', border: 'none', background: 'rgba(239,68,68,0.8)', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.6rem' }}>
-                      <FaTimes />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       </div>
     );
@@ -262,7 +331,11 @@ export default function AdminProjects() {
               <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flex: 1 }}>
                 <div style={{ width: '60px', height: '45px', borderRadius: '8px', overflow: 'hidden', background: 'var(--bg-primary)', flexShrink: 0 }}>
                   {project.media?.[0] ? (
-                    <img src={project.media[0].mediaUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    project.media[0].mediaType === 'image' ? (
+                      <img src={project.media[0].mediaUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ) : (
+                      <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', color: 'var(--text-muted)' }}>🎬</div>
+                    )
                   ) : (
                     <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>📁</div>
                   )}
@@ -292,7 +365,7 @@ const s = {
   cancelBtn: { display: 'flex', alignItems: 'center', gap: '8px', background: 'none', border: '1px solid var(--border-glass)', color: 'var(--text-secondary)', padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', fontFamily: 'var(--font-main)', fontSize: '0.85rem' },
   formCard: { padding: '32px', display: 'flex', flexDirection: 'column', gap: '20px' },
   field: { display: 'flex', flexDirection: 'column' },
-  label: { fontSize: '0.85rem', fontWeight: 500, marginBottom: '6px', color: 'var(--text-secondary)' },
+  label: { fontSize: '0.85rem', fontWeight: 500, marginBottom: '8px', color: 'var(--text-secondary)' },
   input: { padding: '12px 16px', background: 'var(--bg-glass)', border: '1px solid var(--border-glass)', borderRadius: '8px', color: 'var(--text-primary)', fontFamily: 'var(--font-main)', fontSize: '0.9rem', outline: 'none' },
   projectRow: { padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' },
   actionBtn: { background: 'none', border: '1px solid var(--border-glass)', color: 'var(--text-secondary)', width: '36px', height: '36px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' },
