@@ -4,10 +4,8 @@ import { useState, useEffect } from 'react';
 import { FaExternalLinkAlt, FaGithub, FaChevronLeft, FaChevronRight, FaTimes } from 'react-icons/fa';
 
 export default function ProjectModal({ project, onClose }) {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
-  const images = (project.media || []).filter((m) => m.mediaType === 'image');
-  const videos = (project.media || []).filter((m) => m.mediaType === 'video');
+  const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
+  const mediaItems = project.media || [];
 
   useEffect(() => {
     const handleEsc = (e) => {
@@ -21,15 +19,15 @@ export default function ProjectModal({ project, onClose }) {
     };
   }, [onClose]);
 
-  const nextImage = () => {
-    if (images.length > 0) {
-      setCurrentImageIndex((prev) => (prev + 1) % images.length);
+  const nextMedia = () => {
+    if (mediaItems.length > 0) {
+      setCurrentMediaIndex((prev) => (prev + 1) % mediaItems.length);
     }
   };
 
-  const prevImage = () => {
-    if (images.length > 0) {
-      setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
+  const prevMedia = () => {
+    if (mediaItems.length > 0) {
+      setCurrentMediaIndex((prev) => (prev - 1 + mediaItems.length) % mediaItems.length);
     }
   };
 
@@ -75,35 +73,44 @@ export default function ProjectModal({ project, onClose }) {
       );
     }
 
-    // All others: Image Gallery
-    if (images.length > 0) {
+    // All others: Mixed Media Gallery
+    if (mediaItems.length > 0) {
+      const activeMedia = mediaItems[currentMediaIndex];
       return (
         <>
           <div className="modal-gallery">
-            <img
-              src={images[currentImageIndex]?.mediaUrl}
-              alt={`${project.title} - ${currentImageIndex + 1}`}
-            />
-            {images.length > 1 && (
+            {activeMedia?.mediaType === 'video' ? (
+              <video src={activeMedia.mediaUrl} controls autoPlay loop style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+            ) : (
+              <img
+                src={activeMedia?.mediaUrl}
+                alt={`${project.title} - ${currentMediaIndex + 1}`}
+              />
+            )}
+            {mediaItems.length > 1 && (
               <>
-                <button className="gallery-nav gallery-prev" onClick={prevImage} aria-label="Previous image">
+                <button className="gallery-nav gallery-prev" onClick={prevMedia} aria-label="Previous media">
                   <FaChevronLeft />
                 </button>
-                <button className="gallery-nav gallery-next" onClick={nextImage} aria-label="Next image">
+                <button className="gallery-nav gallery-next" onClick={nextMedia} aria-label="Next media">
                   <FaChevronRight />
                 </button>
               </>
             )}
           </div>
-          {images.length > 1 && (
+          {mediaItems.length > 1 && (
             <div className="gallery-thumbnails">
-              {images.map((img, i) => (
+              {mediaItems.map((m, i) => (
                 <div
-                  key={img.id}
-                  className={`gallery-thumb ${i === currentImageIndex ? 'active' : ''}`}
-                  onClick={() => setCurrentImageIndex(i)}
+                  key={m.id || i}
+                  className={`gallery-thumb ${i === currentMediaIndex ? 'active' : ''}`}
+                  onClick={() => setCurrentMediaIndex(i)}
                 >
-                  <img src={img.mediaUrl} alt={`Thumbnail ${i + 1}`} />
+                  {m.mediaType === 'video' ? (
+                     <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0a0e27', fontSize: '1.2rem' }}>🎬</div>
+                  ) : (
+                    <img src={m.mediaUrl} alt={`Thumbnail ${i + 1}`} />
+                  )}
                 </div>
               ))}
             </div>
@@ -159,14 +166,18 @@ export default function ProjectModal({ project, onClose }) {
             </div>
           )}
 
-          {/* Additional images for 3D/video categories */}
-          {(project.category === 'threeD' || project.category === 'video') && images.length > 0 && (
+          {/* Additional gallery links for 3D */}
+          {(project.category === 'threeD' || project.category === 'video') && mediaItems.length > 0 && (
             <div style={{ marginTop: '24px' }}>
               <h4 style={{ marginBottom: '12px', fontWeight: 600 }}>Gallery</h4>
               <div className="gallery-thumbnails" style={{ background: 'transparent', padding: 0, gap: '12px' }}>
-                {images.map((img, i) => (
-                  <div key={img.id} className="gallery-thumb" style={{ width: '120px', height: '80px', borderRadius: '8px' }}>
-                    <img src={img.mediaUrl} alt={`Gallery ${i + 1}`} />
+                {mediaItems.map((m, i) => (
+                  <div key={m.id || i} className="gallery-thumb" style={{ width: '120px', height: '80px', borderRadius: '8px' }}>
+                    {m.mediaType === 'video' ? (
+                       <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0a0e27' }}>🎬 Video</div>
+                    ) : (
+                      <img src={m.mediaUrl} alt={`Gallery ${i + 1}`} />
+                    )}
                   </div>
                 ))}
               </div>

@@ -271,9 +271,14 @@ export default function AdminProjects() {
             <div style={s.field}>
               <label style={s.label}>3D Model Upload (.glb/.gltf)</label>
               {form.model3dUrl ? (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', background: 'rgba(214,255,1,0.05)', border: '1px solid var(--accent)', borderRadius: '8px' }}>
-                  <span style={{ flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontSize: '0.85rem' }}>{form.model3dUrl}</span>
-                  <button onClick={() => setForm({ ...form, model3dUrl: '' })} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer' }}><FaTimes /></button>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '12px', background: 'rgba(214,255,1,0.05)', border: '1px solid var(--accent)', borderRadius: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span style={{ fontSize: '0.85rem' }}>3D Model Uploaded</span>
+                    <button onClick={() => setForm({ ...form, model3dUrl: '' })} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer' }}><FaTimes /></button>
+                  </div>
+                  <div style={{ width: '100%', height: '200px', borderRadius: '8px', overflow: 'hidden', background: '#0a0e27' }}>
+                    <model-viewer src={form.model3dUrl} auto-rotate camera-controls style={{ width: '100%', height: '100%' }}></model-viewer>
+                  </div>
                 </div>
               ) : (
                 <Dropzone type="model" label="Upload 3D Model (.glb, .gltf)" accept=".glb,.gltf" onUpload={(url) => setForm({ ...form, model3dUrl: url })} />
@@ -306,7 +311,7 @@ export default function AdminProjects() {
                   {m.mediaType === 'image' ? (
                      <img src={m.mediaUrl} alt="" style={{ width: '100%', height: '100px', objectFit: 'cover' }} />
                   ) : (
-                     <div style={{ width: '100%', height: '100px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-primary)', color: 'var(--text-muted)' }}>🎬 Video</div>
+                     <video src={m.mediaUrl} style={{ width: '100%', height: '100px', objectFit: 'cover', background: 'black' }} />
                   )}
                   <button onClick={() => handleDeleteMedia(i, m.id)} style={{ position: 'absolute', top: '4px', right: '4px', width: '24px', height: '24px', borderRadius: '50%', border: 'none', background: 'rgba(239,68,68,0.8)', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.6rem' }}>
                     <FaTimes />
