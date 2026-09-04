@@ -50,7 +50,7 @@ export default function About({ profile }) {
                 <div className="stat-label">Years Experience</div>
               </div>
               <div className="stat-card glass">
-                <div className="stat-number gradient-text">50+</div>
+                <div className="stat-number gradient-text">10+</div>
                 <div className="stat-label">Projects Complete</div>
               </div>
               <div className="stat-card glass">
