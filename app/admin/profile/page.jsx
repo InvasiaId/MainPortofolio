@@ -13,7 +13,7 @@ const PLATFORMS = [
 ];
 
 export default function AdminProfile() {
-  const [profile, setProfile] = useState({ name: '', tagline: '', bio: '', photoUrl: '', heroPhotoUrl: '' });
+  const [profile, setProfile] = useState({ name: '', tagline: '', bio: '', photoUrl: '', heroPhotoUrl: '', contactEmail: '' });
   const [socialLinks, setSocialLinks] = useState([]);
   const [skills, setSkills] = useState([]);
   const [newSkill, setNewSkill] = useState({ name: '', category: 'Frontend', proficiency: 50 });
@@ -207,8 +207,13 @@ export default function AdminProfile() {
             <textarea style={{ ...s.input, minHeight: '150px' }} value={profile.bio || ''} onChange={(e) => setProfile({ ...profile, bio: e.target.value })} />
           </div>
 
+          <div style={s.field}>
+            <label style={s.label}>Contact Email (Untuk Form Kontak Website)</label>
+            <input type="email" style={s.input} value={profile.contactEmail || ''} onChange={(e) => setProfile({ ...profile, contactEmail: e.target.value })} placeholder="email@gmail.com" />
+          </div>
+
           <button onClick={saveProfile} className="btn btn-primary" style={{ width: '100%', justifyContent: 'center' }}>
-            <FaSave /> {saving === 'profile' ? 'Saving...' : 'Save Profile'}
+            {saving === 'profile' ? 'Saving...' : <><FaSave /> Save Profile</>}
           </button>
         </div>
       )}

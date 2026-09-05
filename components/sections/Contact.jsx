@@ -26,12 +26,24 @@ export default function Contact({ socialLinks }) {
 
     setStatus('sending');
 
-    // Simulate send — integrate with EmailJS/Formspree later
-    setTimeout(() => {
-      setStatus('sent');
-      setFormData({ name: '', email: '', message: '' });
-      setTimeout(() => setStatus(''), 3000);
-    }, 1000);
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      if (res.ok) {
+        setStatus('sent');
+        setFormData({ name: '', email: '', message: '' });
+        setTimeout(() => setStatus(''), 5000);
+      } else {
+        const data = await res.json();
+        setStatus(data.error || 'Failed to send message. Please try again.');
+      }
+    } catch {
+      setStatus('Network error. Please try again.');
+    }
   };
 
   return (

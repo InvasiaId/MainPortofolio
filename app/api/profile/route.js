@@ -30,7 +30,8 @@ export async function PUT(request) {
         bio: sanitized.bio,
         photoUrl: sanitized.photoUrl || null,
         heroPhotoUrl: sanitized.heroPhotoUrl || null,
-        resumeUrl: sanitized.resumeUrl || null
+        resumeUrl: sanitized.resumeUrl || null,
+        contactEmail: sanitized.contactEmail || null
       };
 
       let profile = await prisma.profile.findFirst();

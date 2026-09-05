@@ -4,16 +4,35 @@ import { getSession } from '@/lib/auth';
 export async function POST(request) {
   try {
     const body = await request.json();
-    await prisma.pageView.create({
-      data: {
-        page: body.page || '/',
-        referrer: body.referrer || null,
-        country: body.country || null,
-        device: body.device || null,
-        browser: body.browser || null,
-        sessionId: body.sessionId || null,
+    const page = body.page || '/';
+    
+    // Get client IP to prevent spammy refresh counting
+    const ipAddress = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
+
+    // Prevent counting the same IP on the same page within the last 2 hours
+    const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60 * 1000);
+    const existingView = await prisma.pageView.findFirst({
+      where: {
+        page: page,
+        ipAddress: ipAddress,
+        createdAt: { gte: twoHoursAgo },
       },
     });
+
+    if (!existingView) {
+      await prisma.pageView.create({
+        data: {
+          page,
+          referrer: body.referrer || null,
+          country: body.country || null,
+          device: body.device || null,
+          browser: body.browser || null,
+          sessionId: body.sessionId || null,
+          ipAddress,
+        },
+      });
+    }
+    
     return Response.json({ success: true }, { status: 201 });
   } catch {
     return Response.json({ success: false }, { status: 500 });
