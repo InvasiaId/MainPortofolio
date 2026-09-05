@@ -56,6 +56,6 @@ export async function POST(request) {
 
   } catch (error) {
     console.error('Contact email error:', error);
-    return Response.json({ error: 'Failed to send message' }, { status: 500 });
+    return Response.json({ error: `Failed to send message: ${error.message}` }, { status: 500 });
   }
 }
