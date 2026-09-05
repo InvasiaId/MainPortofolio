@@ -33,10 +33,8 @@ export async function POST(request) {
       },
     });
 
-    const senderEmail = process.env.SMTP_USER === 'resend' ? 'onboarding@resend.dev' : process.env.SMTP_USER;
-
     const mailOptions = {
-      from: `"${data.name}" <${senderEmail}>`,
+      from: process.env.SMTP_USER === 'resend' ? 'Portfolio Contact <onboarding@resend.dev>' : process.env.SMTP_USER,
       replyTo: data.email,
       to: toEmail,
       subject: `New Contact Form Message from ${data.name}`,
