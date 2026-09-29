@@ -511,6 +511,10 @@ img {
   padding: var(--section-padding);
 }
 
+.fun-projects {
+  padding-top: 0;
+}
+
 .filter-tabs {
   display: flex;
   gap: 8px;

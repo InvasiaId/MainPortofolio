@@ -14,7 +14,7 @@ const CATEGORIES = [
 ];
 
 const emptyProject = {
-  title: '', category: 'website', description: '', techStack: [],
+  title: '', category: 'website', tag: 'mainProject', description: '', techStack: [],
   projectUrl: '', repoUrl: '', model3dUrl: '', featured: false, displayOrder: 0,
   media: []
 };
@@ -196,6 +196,7 @@ export default function AdminProjects() {
     setForm({
       title: project.title,
       category: project.category,
+      tag: project.tag || 'mainProject',
       description: project.description,
       techStack: project.techStack || [],
       projectUrl: project.projectUrl || '',
@@ -231,6 +232,14 @@ export default function AdminProjects() {
             <label style={s.label}>Category *</label>
             <select style={s.input} value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
               {CATEGORIES.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
+            </select>
+          </div>
+
+          <div style={s.field}>
+            <label style={s.label}>Project Tag *</label>
+            <select style={s.input} value={form.tag} onChange={(e) => setForm({ ...form, tag: e.target.value })}>
+              <option value="mainProject">Main Project</option>
+              <option value="funProject">Fun Project</option>
             </select>
           </div>
 
@@ -350,7 +359,7 @@ export default function AdminProjects() {
 
       {filtered.length === 0 ? (
         <div className="glass" style={{ padding: '60px', textAlign: 'center', color: 'var(--text-muted)' }}>
-          No projects yet. Click "New Project" to add one.
+          No projects yet. Click &quot;New Project&quot; to add one.
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -372,6 +381,9 @@ export default function AdminProjects() {
                   <div style={{ fontWeight: 600 }}>{project.title}</div>
                   <span className={`category-badge ${project.category}`} style={{ fontSize: '0.65rem', padding: '2px 8px' }}>
                     {project.category === 'threeD' ? '3D' : project.category}
+                  </span>
+                  <span style={{ marginLeft: '6px', fontSize: '0.65rem', color: 'var(--accent)' }}>
+                    {project.tag === 'funProject' ? 'Fun Project' : 'Main Project'}
                   </span>
                 </div>
               </div>

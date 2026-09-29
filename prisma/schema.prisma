@@ -54,6 +54,7 @@ model Project {
   id           Int             @id @default(autoincrement())
   title        String
   category     ProjectCategory
+  tag          ProjectTag      @default(mainProject)
   description  String
   techStack    String[]
   projectUrl   String?
@@ -110,6 +111,11 @@ enum ProjectCategory {
   video
   graphic
   hardware
+}
+
+enum ProjectTag {
+  mainProject
+  funProject
 }
 
 enum MediaType {

@@ -2,6 +2,8 @@ import prisma from '@/lib/prisma';
 import { getSession } from '@/lib/auth';
 import { sanitizeObject, isValidUrl } from '@/lib/sanitize';
 
+const PROJECT_TAGS = ['mainProject', 'funProject'];
+
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -36,6 +38,10 @@ export async function POST(request) {
       return Response.json({ error: 'Title and category are required' }, { status: 400 });
     }
 
+    if (data.tag && !PROJECT_TAGS.includes(data.tag)) {
+      return Response.json({ error: 'Invalid project tag' }, { status: 400 });
+    }
+
     if (data.projectUrl && !isValidUrl(data.projectUrl)) {
       return Response.json({ error: 'Invalid project URL' }, { status: 400 });
     }
@@ -48,6 +54,7 @@ export async function POST(request) {
       data: {
         title: data.title,
         category: data.category,
+        tag: data.tag || 'mainProject',
         description: data.description || '',
         techStack: data.techStack || [],
         projectUrl: data.projectUrl || null,
@@ -82,6 +89,10 @@ export async function PUT(request) {
 
     if (!id) return Response.json({ error: 'Project ID required' }, { status: 400 });
 
+    if (data.tag !== undefined && !PROJECT_TAGS.includes(data.tag)) {
+      return Response.json({ error: 'Invalid project tag' }, { status: 400 });
+    }
+
     if (data.projectUrl && !isValidUrl(data.projectUrl)) {
       return Response.json({ error: 'Invalid project URL' }, { status: 400 });
     }
@@ -91,6 +102,7 @@ export async function PUT(request) {
       data: {
         ...(data.title && { title: data.title }),
         ...(data.category && { category: data.category }),
+        ...(data.tag !== undefined && { tag: data.tag }),
         ...(data.description !== undefined && { description: data.description }),
         ...(data.techStack && { techStack: data.techStack }),
         ...(data.projectUrl !== undefined && { projectUrl: data.projectUrl || null }),
