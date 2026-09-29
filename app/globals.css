@@ -577,6 +577,12 @@ img {
   width: max-content;
 }
 
+.projects-grid-static {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  width: 100%;
+}
+
 .projects-empty {
   padding: 60px 0;
   color: var(--text-muted);
@@ -1091,6 +1097,10 @@ select option {
 
   .projects-grid {
     gap: 18px;
+  }
+
+  .projects-grid-static {
+    grid-template-columns: 1fr;
   }
 
   .contact-grid {

@@ -22,7 +22,7 @@ const CATEGORY_ICONS = {
   hardware: '⚙️',
 };
 
-function ProjectCards({ projects, onSelect, emptyMessage }) {
+function ProjectCards({ projects, onSelect, emptyMessage, carousel = false }) {
   const carouselRef = useRef(null);
   const trackRef = useRef(null);
   const dragRef = useRef({ active: false, startX: 0, startScrollLeft: 0 });
@@ -32,7 +32,7 @@ function ProjectCards({ projects, onSelect, emptyMessage }) {
   useLayoutEffect(() => {
     const viewport = carouselRef.current;
     const track = trackRef.current;
-    if (!viewport || !track || projects.length === 0) return;
+    if (!carousel || !viewport || !track || projects.length === 0) return;
 
     const firstGroup = track.children[0];
     const groupWidth = firstGroup?.getBoundingClientRect().width;
@@ -45,7 +45,7 @@ function ProjectCards({ projects, onSelect, emptyMessage }) {
     }
 
     viewport.scrollLeft = (groupWidth * loopCopies - viewport.clientWidth) / 2;
-  }, [projects, loopCopies]);
+  }, [carousel, projects, loopCopies]);
 
   const normalizeScroll = () => {
     const viewport = carouselRef.current;
@@ -90,6 +90,64 @@ function ProjectCards({ projects, onSelect, emptyMessage }) {
     return <div className="projects-empty">{emptyMessage}</div>;
   }
 
+  const renderProjectCard = (project, groupIndex, isLoopCopy) => {
+    const thumbnail = project.media?.find((m) => m.mediaType === 'image');
+    return (
+      <div
+        key={`${groupIndex}-${project.id}`}
+        className="project-card"
+        onClick={(event) => {
+          if (isLoopCopy && suppressClickRef.current) {
+            event.preventDefault();
+            event.stopPropagation();
+            return;
+          }
+          onSelect(project);
+        }}
+        role="button"
+        tabIndex={!isLoopCopy || groupIndex === Math.floor(loopCopies / 2) ? 0 : -1}
+        onKeyDown={(event) => event.key === 'Enter' && onSelect(project)}
+      >
+        <div className="project-card-image">
+          {thumbnail ? (
+            <img src={thumbnail.mediaUrl} alt={project.title} loading="lazy" draggable="false" />
+          ) : (
+            <div className="project-card-image-placeholder">
+              {CATEGORY_ICONS[project.category] || '📁'}
+            </div>
+          )}
+          <div className="project-card-overlay">
+            <span className={`category-badge ${project.category}`}>
+              {project.category === 'threeD' ? '3D Design' : project.category}
+            </span>
+          </div>
+        </div>
+        <div className="project-card-body">
+          <h3 className="project-card-title">{project.title}</h3>
+          <p className="project-card-desc">{project.description}</p>
+          {project.techStack?.length > 0 && (
+            <div className="project-card-tech">
+              {project.techStack.slice(0, 4).map((tech) => (
+                <span key={tech} className="tech-tag">{tech}</span>
+              ))}
+              {project.techStack.length > 4 && (
+                <span className="tech-tag">+{project.techStack.length - 4}</span>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  if (!carousel) {
+    return (
+      <div className="projects-grid projects-grid-static">
+        {projects.map((project, index) => renderProjectCard(project, index, false))}
+      </div>
+    );
+  }
+
   return (
     <div>
       <div
@@ -111,55 +169,7 @@ function ProjectCards({ projects, onSelect, emptyMessage }) {
               key={`project-loop-${groupIndex}`}
               aria-hidden={groupIndex !== Math.floor(loopCopies / 2)}
             >
-              {projects.map((project) => {
-                const thumbnail = project.media?.find((m) => m.mediaType === 'image');
-                return (
-                  <div
-                    key={`${groupIndex}-${project.id}`}
-                    className="project-card"
-                    onClick={(event) => {
-                      if (suppressClickRef.current) {
-                        event.preventDefault();
-                        event.stopPropagation();
-                        return;
-                      }
-                      onSelect(project);
-                    }}
-                    role="button"
-                    tabIndex={groupIndex === Math.floor(loopCopies / 2) ? 0 : -1}
-                    onKeyDown={(event) => event.key === 'Enter' && onSelect(project)}
-                  >
-                    <div className="project-card-image">
-                      {thumbnail ? (
-                        <img src={thumbnail.mediaUrl} alt={project.title} loading="lazy" draggable="false" />
-                      ) : (
-                        <div className="project-card-image-placeholder">
-                          {CATEGORY_ICONS[project.category] || '📁'}
-                        </div>
-                      )}
-                      <div className="project-card-overlay">
-                        <span className={`category-badge ${project.category}`}>
-                          {project.category === 'threeD' ? '3D Design' : project.category}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="project-card-body">
-                      <h3 className="project-card-title">{project.title}</h3>
-                      <p className="project-card-desc">{project.description}</p>
-                      {project.techStack?.length > 0 && (
-                        <div className="project-card-tech">
-                          {project.techStack.slice(0, 4).map((tech) => (
-                            <span key={tech} className="tech-tag">{tech}</span>
-                          ))}
-                          {project.techStack.length > 4 && (
-                            <span className="tech-tag">+{project.techStack.length - 4}</span>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
+              {projects.map((project) => renderProjectCard(project, groupIndex, true))}
             </div>
           ))}
         </div>
@@ -229,6 +239,7 @@ export default function Projects({ projects }) {
               projects={funProjects}
               onSelect={setSelectedProject}
               emptyMessage="No fun projects yet."
+              carousel
             />
           </div>
         </section>
