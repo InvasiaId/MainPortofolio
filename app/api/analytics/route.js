@@ -42,7 +42,7 @@ export async function POST(request) {
 export async function GET(request) {
   try {
     const session = await getSession();
-    if (!session) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!session) return Response.json({ error: 'Akses tidak diizinkan.' }, { status: 401 });
 
     const { searchParams } = new URL(request.url);
     const period = searchParams.get('period') || '30d';
@@ -126,6 +126,6 @@ export async function GET(request) {
       projectsByCategory: projectsByCategory.map(p => ({ category: p.category, count: p._count.category })),
     });
   } catch (error) {
-    return Response.json({ error: 'Failed to fetch analytics' }, { status: 500 });
+    return Response.json({ error: 'Gagal mengambil data analitik.' }, { status: 500 });
   }
 }

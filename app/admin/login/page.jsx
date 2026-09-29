@@ -25,14 +25,14 @@ export default function AdminLogin() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || 'Login failed');
+        setError(data.error || 'Gagal masuk.');
         setLoading(false);
         return;
       }
 
       router.push('/admin');
     } catch {
-      setError('Network error. Please try again.');
+      setError('Terjadi kesalahan jaringan. Silakan coba lagi.');
       setLoading(false);
     }
   };
@@ -41,9 +41,9 @@ export default function AdminLogin() {
     <div style={styles.page}>
       <div style={styles.card}>
         <h1 style={styles.title}>
-          <span className="gradient-text">Admin</span> Login
+          <span className="gradient-text">Admin</span> Masuk
         </h1>
-        <p style={styles.subtitle}>Sign in to manage your portfolio</p>
+        <p style={styles.subtitle}>Masuk untuk mengelola portofolio Anda.</p>
 
         <form onSubmit={handleSubmit} style={styles.form}>
           <div className="form-group">
@@ -53,13 +53,13 @@ export default function AdminLogin() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="admin@example.com"
+              placeholder="admin@contoh.com"
               required
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="login-password">Password</label>
+            <label htmlFor="login-password">Kata Sandi</label>
             <input
               id="login-password"
               type="password"
@@ -78,7 +78,7 @@ export default function AdminLogin() {
             style={{ width: '100%', justifyContent: 'center' }}
             disabled={loading}
           >
-            {loading ? 'Signing in...' : 'Sign In'}
+            {loading ? 'Sedang masuk...' : 'Masuk'}
           </button>
         </form>
       </div>

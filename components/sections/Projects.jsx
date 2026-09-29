@@ -4,13 +4,22 @@ import { useState, useMemo, useRef, useLayoutEffect } from 'react';
 import ProjectModal from '@/components/ui/ProjectModal';
 
 const CATEGORY_LABELS = {
-  all: '🎯 All',
-  website: '🌐 Website',
+  all: '🎯 Semua',
+  website: '🌐 Situs Web',
   android: '📱 Android',
-  threeD: '🎨 3D Design',
+  threeD: '🎨 Desain 3D',
   video: '🎬 Video',
-  graphic: '🖼️ Graphic',
-  hardware: '⚙️ Hardware',
+  graphic: '🖼️ Desain Grafis',
+  hardware: '⚙️ Perangkat Keras',
+};
+
+const CATEGORY_NAMES = {
+  website: 'Situs Web',
+  android: 'Android',
+  threeD: 'Desain 3D',
+  video: 'Video',
+  graphic: 'Desain Grafis',
+  hardware: 'Perangkat Keras',
 };
 
 const CATEGORY_ICONS = {
@@ -118,7 +127,7 @@ function ProjectCards({ projects, onSelect, emptyMessage, carousel = false }) {
           )}
           <div className="project-card-overlay">
             <span className={`category-badge ${project.category}`}>
-              {project.category === 'threeD' ? '3D Design' : project.category}
+              {CATEGORY_NAMES[project.category] || project.category}
             </span>
           </div>
         </div>
@@ -155,7 +164,7 @@ function ProjectCards({ projects, onSelect, emptyMessage, carousel = false }) {
         className="projects-carousel"
         role="region"
         aria-roledescription="carousel"
-        aria-label="Project carousel. Drag to explore projects."
+        aria-label="Karusel proyek. Seret untuk melihat proyek."
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
@@ -174,7 +183,7 @@ function ProjectCards({ projects, onSelect, emptyMessage, carousel = false }) {
           ))}
         </div>
       </div>
-      <p className="carousel-hint" aria-hidden="true">← Hold and drag to explore →</p>
+      <p className="carousel-hint" aria-hidden="true">← Tahan dan seret untuk menjelajahi →</p>
     </div>
   );
 }
@@ -201,9 +210,9 @@ export default function Projects({ projects }) {
         <div className="container">
           <div className="section-header">
             <h2 className="section-title">
-              My <span className="gradient-text">Projects</span>
+              <span className="gradient-text">Proyek</span> Saya
             </h2>
-            <p className="section-subtitle">Explore my work across different categories</p>
+            <p className="section-subtitle">Jelajahi karya saya di berbagai bidang.</p>
           </div>
 
           <div className="filter-tabs">
@@ -221,7 +230,7 @@ export default function Projects({ projects }) {
           <ProjectCards
             projects={filteredMainProjects}
             onSelect={setSelectedProject}
-            emptyMessage={mainProjects.length ? 'No projects in this category yet.' : 'Add main projects through the admin panel.'}
+            emptyMessage={mainProjects.length ? 'Belum ada proyek dalam kategori ini.' : 'Tambahkan proyek utama melalui panel admin.'}
           />
         </div>
       </section>
@@ -231,14 +240,14 @@ export default function Projects({ projects }) {
           <div className="container">
             <div className="section-header">
               <h2 className="section-title">
-                Fun <span className="gradient-text">Projects</span>
+                Proyek <span className="gradient-text">Santai</span>
               </h2>
-              <p className="section-subtitle">Small experiments and projects made for fun</p>
+              <p className="section-subtitle">Proyek santai yang saya buat untuk belajar dan bersenang-senang.</p>
             </div>
             <ProjectCards
               projects={funProjects}
               onSelect={setSelectedProject}
-              emptyMessage="No fun projects yet."
+              emptyMessage="Belum ada proyek santai."
               carousel
             />
           </div>

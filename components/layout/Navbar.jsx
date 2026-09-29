@@ -13,11 +13,11 @@ export default function Navbar() {
   }, []);
 
   const links = [
-    { href: '#hero', label: 'Home' },
-    { href: '#about', label: 'About' },
-    { href: '#skills', label: 'Skills' },
-    { href: '#projects', label: 'Projects' },
-    { href: '#contact', label: 'Contact' },
+    { href: '#hero', label: 'Beranda' },
+    { href: '#about', label: 'Tentang' },
+    { href: '#skills', label: 'Keahlian' },
+    { href: '#projects', label: 'Proyek' },
+    { href: '#contact', label: 'Kontak' },
   ];
 
   const handleClick = (e, href) => {
@@ -33,7 +33,7 @@ export default function Navbar() {
     <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
       <div className="container">
         <a href="#hero" className="nav-logo gradient-text" onClick={(e) => handleClick(e, '#hero')}>
-          Portfolio
+          Portofolio
         </a>
 
         <ul className={`nav-links ${menuOpen ? 'open' : ''}`}>
@@ -49,7 +49,7 @@ export default function Navbar() {
         <button
           className="nav-hamburger"
           onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="Toggle menu"
+          aria-label="Buka atau tutup menu"
         >
           <span></span>
           <span></span>

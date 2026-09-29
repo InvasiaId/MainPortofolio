@@ -4,13 +4,13 @@ import { getSession } from '@/lib/auth';
 export async function POST(request) {
   try {
     const session = await getSession();
-    if (!session) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!session) return Response.json({ error: 'Akses tidak diizinkan.' }, { status: 401 });
 
     const body = await request.json();
     const { projectId, mediaUrl, mediaType, displayOrder } = body;
 
     if (!projectId || !mediaUrl) {
-      return Response.json({ error: 'projectId and mediaUrl required' }, { status: 400 });
+      return Response.json({ error: 'ID proyek dan tautan media wajib diisi.' }, { status: 400 });
     }
 
     const media = await prisma.projectMedia.create({
@@ -24,23 +24,23 @@ export async function POST(request) {
 
     return Response.json(media, { status: 201 });
   } catch (error) {
-    return Response.json({ error: 'Failed to add media' }, { status: 500 });
+    return Response.json({ error: 'Gagal menambahkan media.' }, { status: 500 });
   }
 }
 
 export async function DELETE(request) {
   try {
     const session = await getSession();
-    if (!session) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!session) return Response.json({ error: 'Akses tidak diizinkan.' }, { status: 401 });
 
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
 
-    if (!id) return Response.json({ error: 'Media ID required' }, { status: 400 });
+    if (!id) return Response.json({ error: 'ID media wajib diisi.' }, { status: 400 });
 
     await prisma.projectMedia.delete({ where: { id: parseInt(id) } });
     return Response.json({ success: true });
   } catch (error) {
-    return Response.json({ error: 'Failed to delete media' }, { status: 500 });
+    return Response.json({ error: 'Gagal menghapus media.' }, { status: 500 });
   }
 }

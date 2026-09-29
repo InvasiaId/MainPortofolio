@@ -6,10 +6,10 @@ import Link from 'next/link';
 import { FaHome, FaProjectDiagram, FaUser, FaChartBar, FaSignOutAlt } from 'react-icons/fa';
 
 const NAV_ITEMS = [
-  { href: '/admin', label: 'Dashboard', icon: FaHome },
-  { href: '/admin/projects', label: 'Projects', icon: FaProjectDiagram },
-  { href: '/admin/profile', label: 'Profile', icon: FaUser },
-  { href: '/admin/monitoring', label: 'Monitoring', icon: FaChartBar },
+  { href: '/admin', label: 'Ringkasan', icon: FaHome },
+  { href: '/admin/projects', label: 'Proyek', icon: FaProjectDiagram },
+  { href: '/admin/profile', label: 'Profil', icon: FaUser },
+  { href: '/admin/monitoring', label: 'Pemantauan', icon: FaChartBar },
 ];
 
 export default function AdminLayout({ children }) {
@@ -20,8 +20,6 @@ export default function AdminLayout({ children }) {
 
   useEffect(() => {
     if (pathname === '/admin/login') {
-      setLoading(false);
-      setAuthenticated(false);
       return;
     }
 
@@ -58,7 +56,7 @@ export default function AdminLayout({ children }) {
     <div style={styles.layout}>
       <aside style={styles.sidebar}>
         <div style={styles.sidebarHeader}>
-          <Link href="/" className="gradient-text" style={styles.logo}>Portfolio</Link>
+          <Link href="/" className="gradient-text" style={styles.logo}>Portofolio</Link>
           <span style={styles.adminBadge}>Admin</span>
         </div>
 
@@ -83,7 +81,7 @@ export default function AdminLayout({ children }) {
 
         <button onClick={handleLogout} style={styles.logoutBtn}>
           <FaSignOutAlt />
-          Logout
+          Keluar
         </button>
       </aside>
 

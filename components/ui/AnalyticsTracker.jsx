@@ -6,9 +6,9 @@ export default function AnalyticsTracker() {
   useEffect(() => {
     const detectDevice = () => {
       const ua = navigator.userAgent;
-      if (/Mobile|Android|iPhone/i.test(ua)) return 'Mobile';
+      if (/Mobile|Android|iPhone/i.test(ua)) return 'Ponsel';
       if (/Tablet|iPad/i.test(ua)) return 'Tablet';
-      return 'Desktop';
+      return 'Komputer';
     };
 
     const detectBrowser = () => {
@@ -17,7 +17,7 @@ export default function AnalyticsTracker() {
       if (ua.includes('Firefox')) return 'Firefox';
       if (ua.includes('Safari') && !ua.includes('Chrome')) return 'Safari';
       if (ua.includes('Edg')) return 'Edge';
-      return 'Other';
+      return 'Lainnya';
     };
 
     const sessionId = sessionStorage.getItem('sid') || (() => {
@@ -44,7 +44,7 @@ export default function AnalyticsTracker() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          errorMessage: event.message || 'Unknown error',
+          errorMessage: event.message || 'Kesalahan tidak diketahui',
           errorStack: event.error?.stack || null,
           page: window.location.pathname,
           userAgent: navigator.userAgent,

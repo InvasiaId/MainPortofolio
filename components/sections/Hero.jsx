@@ -123,19 +123,19 @@ export default function Hero({ profile, socialLinks }) {
       <div className="container">
         <div className="hero-content">
           <div className="hero-text">
-            <p className="hero-greeting">👋 Hello, I&apos;m</p>
+            <p className="hero-greeting">👋 Halo, saya</p>
             <h1 className="hero-name">
-              <span className="gradient-text">{profile?.name || 'Your Name'}</span>
+              <span className="gradient-text">{profile?.name || 'Nama Anda'}</span>
             </h1>
             <p className="hero-tagline">
-              {profile?.tagline || 'Full-Stack Developer & Designer'}
+              {profile?.tagline || 'Pengembang dan Desainer Full-Stack'}
             </p>
             <div className="hero-buttons">
               <a href="#projects" className="btn btn-primary">
-                View My Work
+                Lihat Karya Saya
               </a>
               <a href="#contact" className="btn btn-outline">
-                Contact Me
+                Hubungi Saya
               </a>
             </div>
             {socialLinks && socialLinks.length > 0 && (
@@ -160,7 +160,7 @@ export default function Hero({ profile, socialLinks }) {
           <div className="hero-image">
             <div className="hero-image-wrapper">
               {profile?.heroPhotoUrl ? (
-                <img src={profile.heroPhotoUrl} alt={profile.name || 'Profile'} />
+                <img src={profile.heroPhotoUrl} alt={profile.name || 'Foto profil'} />
               ) : (
                 <div className="hero-image-placeholder">👤</div>
               )}

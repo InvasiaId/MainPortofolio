@@ -20,9 +20,9 @@ async function main() {
     where: { id: 1 },
     update: {},
     create: {
-      name: 'Your Name',
-      tagline: 'Full-Stack Developer & Designer',
-      bio: 'Passionate developer with experience in web, mobile, 3D design, video production, graphic design, and hardware/IoT projects.',
+      name: 'Nama Anda',
+      tagline: 'Pengembang dan Desainer Full-Stack',
+      bio: 'Pengembang yang bersemangat dan berpengalaman dalam situs web, aplikasi seluler, desain 3D, produksi video, desain grafis, serta proyek perangkat keras dan IoT.',
     },
   });
 
@@ -41,7 +41,7 @@ async function main() {
     });
   }
 
-  console.log('✅ Seed complete! Admin: admin@portfolio.com / admin123');
+  console.log('✅ Pengisian data selesai! Admin: admin@portfolio.com / admin123');
 }
 
 main()

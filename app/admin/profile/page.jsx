@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { FaSave, FaPlus, FaTimes, FaUpload } from 'react-icons/fa';
+import { FaSave, FaPlus, FaTimes, FaUpload, FaFilePdf, FaDownload } from 'react-icons/fa';
 import Toast from '@/components/ui/Toast';
 
 const PLATFORMS = [
@@ -13,7 +13,7 @@ const PLATFORMS = [
 ];
 
 export default function AdminProfile() {
-  const [profile, setProfile] = useState({ name: '', tagline: '', bio: '', photoUrl: '', heroPhotoUrl: '', contactEmail: '' });
+  const [profile, setProfile] = useState({ name: '', tagline: '', bio: '', photoUrl: '', heroPhotoUrl: '', resumeUrl: '', contactEmail: '' });
   const [socialLinks, setSocialLinks] = useState([]);
   const [skills, setSkills] = useState([]);
   const [newSkill, setNewSkill] = useState({ name: '', category: 'Frontend', proficiency: 50 });
@@ -39,8 +39,8 @@ export default function AdminProfile() {
       body: JSON.stringify({ type: 'profile', ...profile }),
     });
     setSaving('');
-    if (res.ok) showToast('Profile saved successfully!');
-    else showToast('Failed to save profile', 'error');
+    if (res.ok) showToast('Profil berhasil disimpan!');
+    else showToast('Gagal menyimpan profil.', 'error');
   };
 
   const saveSocialLinks = async () => {
@@ -51,8 +51,8 @@ export default function AdminProfile() {
       body: JSON.stringify({ type: 'social_links', links: socialLinks }),
     });
     setSaving('');
-    if (res.ok) showToast('Social links saved successfully!');
-    else showToast('Failed to save social links', 'error');
+    if (res.ok) showToast('Tautan media sosial berhasil disimpan!');
+    else showToast('Gagal menyimpan tautan media sosial.', 'error');
   };
 
   const addSocialLink = () => {
@@ -81,9 +81,9 @@ export default function AdminProfile() {
       const skill = await res.json();
       setSkills([...skills, skill]);
       setNewSkill({ name: '', icon: '', category: '', proficiency: 50 });
-      showToast('Skill added successfully!');
+      showToast('Keahlian berhasil ditambahkan!');
     } else {
-      showToast('Failed to add skill', 'error');
+      showToast('Gagal menambahkan keahlian.', 'error');
     }
   };
 
@@ -91,9 +91,9 @@ export default function AdminProfile() {
     const res = await fetch(`/api/skills?id=${id}`, { method: 'DELETE' });
     if (res.ok) {
       setSkills(skills.filter((s) => s.id !== id));
-      showToast('Skill deleted!');
+      showToast('Keahlian berhasil dihapus!');
     } else {
-      showToast('Failed to delete skill', 'error');
+      showToast('Gagal menghapus keahlian.', 'error');
     }
   };
 
@@ -107,8 +107,8 @@ export default function AdminProfile() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(skill),
     });
-    if (res.ok) showToast('Skill updated!');
-    else showToast('Failed to update skill', 'error');
+    if (res.ok) showToast('Keahlian berhasil diperbarui!');
+    else showToast('Gagal memperbarui keahlian.', 'error');
   };
 
   const handlePhotoUpload = async (file, field = 'photoUrl') => {
@@ -121,22 +121,43 @@ export default function AdminProfile() {
     const data = await res.json();
     if (res.ok) {
       setProfile(prev => ({ ...prev, [field]: data.url }));
-      showToast('Photo uploaded! Remember to click Save Profile.');
+      showToast('Foto berhasil diunggah. Jangan lupa simpan profil.');
     } else {
-      showToast(data.error || 'Photo upload failed', 'error');
+      showToast(data.error || 'Gagal mengunggah foto.', 'error');
+    }
+  };
+
+  const handleResumeUpload = async (file) => {
+    if (!file) return;
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', 'profile');
+    formData.append('fileCategory', 'pdf');
+
+    try {
+      const res = await fetch('/api/upload', { method: 'POST', body: formData });
+      const data = await res.json();
+      if (!res.ok) {
+        showToast(data.error || 'Gagal mengunggah CV.', 'error');
+        return;
+      }
+      setProfile((previous) => ({ ...previous, resumeUrl: data.url }));
+      showToast('CV berhasil diunggah. Klik Simpan Profil untuk menerbitkannya.');
+    } catch {
+      showToast('Terjadi kesalahan jaringan saat mengunggah CV.', 'error');
     }
   };
 
   const TABS = [
-    { key: 'profile', label: '👤 Profile' },
-    { key: 'social', label: '🔗 Social Links' },
-    { key: 'skills', label: '⚡ Skills' },
+    { key: 'profile', label: '👤 Profil' },
+    { key: 'social', label: '🔗 Media Sosial' },
+    { key: 'skills', label: '⚡ Keahlian' },
   ];
 
   return (
     <div>
       <h1 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '24px' }}>
-        <span className="gradient-text">Profile</span>
+        <span className="gradient-text">Profil</span>
       </h1>
 
       <div style={{ display: 'flex', gap: '6px', marginBottom: '24px' }}>
@@ -157,17 +178,17 @@ export default function AdminProfile() {
           <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
             {/* Hero Photo */}
             <div style={{ ...s.field, flex: 1 }}>
-              <label style={s.label}>Hero Photo (Beranda)</label>
+              <label style={s.label}>Foto Utama (Beranda)</label>
               <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                 <div style={{ width: '80px', height: '80px', borderRadius: '12px', overflow: 'hidden', border: '2px solid var(--border-glass)', background: 'var(--bg-primary)' }}>
                   {profile.heroPhotoUrl ? (
-                    <img src={profile.heroPhotoUrl} alt="Hero" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <img src={profile.heroPhotoUrl} alt="Foto utama" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   ) : (
                     <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem' }}>🖼️</div>
                   )}
                 </div>
                 <label className="btn btn-outline" style={{ cursor: 'pointer', fontSize: '0.85rem' }}>
-                  <FaUpload /> Upload Hero
+                  <FaUpload /> Unggah Foto Utama
                   <input type="file" accept="image/*" hidden onChange={(e) => e.target.files[0] && handlePhotoUpload(e.target.files[0], 'heroPhotoUrl')} />
                 </label>
               </div>
@@ -175,7 +196,7 @@ export default function AdminProfile() {
 
             {/* About Photo */}
             <div style={{ ...s.field, flex: 1 }}>
-              <label style={s.label}>About Photo (Profil)</label>
+              <label style={s.label}>Foto Tentang Saya</label>
               <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                 <div style={{ width: '80px', height: '80px', borderRadius: '12px', overflow: 'hidden', border: '2px solid var(--border-glass)', background: 'var(--bg-primary)' }}>
                   {profile.photoUrl ? (
@@ -185,7 +206,7 @@ export default function AdminProfile() {
                   )}
                 </div>
                 <label className="btn btn-outline" style={{ cursor: 'pointer', fontSize: '0.85rem' }}>
-                  <FaUpload /> Upload About
+                  <FaUpload /> Unggah Foto Profil
                   <input type="file" accept="image/*" hidden onChange={(e) => e.target.files[0] && handlePhotoUpload(e.target.files[0], 'photoUrl')} />
                 </label>
               </div>
@@ -193,27 +214,45 @@ export default function AdminProfile() {
           </div>
 
           <div style={s.field}>
-            <label style={s.label}>Name</label>
+            <label style={s.label}>Nama</label>
             <input style={s.input} value={profile.name || ''} onChange={(e) => setProfile({ ...profile, name: e.target.value })} />
           </div>
 
           <div style={s.field}>
-            <label style={s.label}>Tagline</label>
-            <input style={s.input} value={profile.tagline || ''} onChange={(e) => setProfile({ ...profile, tagline: e.target.value })} placeholder="Full-Stack Developer & Designer" />
+            <label style={s.label}>Slogan</label>
+            <input style={s.input} value={profile.tagline || ''} onChange={(e) => setProfile({ ...profile, tagline: e.target.value })} placeholder="Pengembang dan Desainer Full-Stack" />
           </div>
 
           <div style={s.field}>
-            <label style={s.label}>Bio</label>
+            <label style={s.label}>Biografi</label>
             <textarea style={{ ...s.input, minHeight: '150px' }} value={profile.bio || ''} onChange={(e) => setProfile({ ...profile, bio: e.target.value })} />
           </div>
 
           <div style={s.field}>
-            <label style={s.label}>Contact Email (Untuk Form Kontak Website)</label>
+            <label style={s.label}>Email Kontak (untuk formulir kontak situs)</label>
             <input type="email" style={s.input} value={profile.contactEmail || ''} onChange={(e) => setProfile({ ...profile, contactEmail: e.target.value })} placeholder="email@gmail.com" />
           </div>
 
+          <div style={s.field}>
+            <label style={s.label}>CV (PDF, maksimal 4 MB)</label>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+              <label className="btn btn-outline" style={{ cursor: 'pointer', fontSize: '0.85rem' }}>
+                <FaUpload /> Unggah CV
+                <input type="file" accept="application/pdf,.pdf" hidden onChange={(e) => handleResumeUpload(e.target.files[0])} />
+              </label>
+              {profile.resumeUrl && (
+                <a href={profile.resumeUrl} target="_blank" rel="noopener noreferrer" className="btn btn-outline">
+                  <FaFilePdf /> Lihat CV <FaDownload />
+                </a>
+              )}
+            </div>
+            <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem', marginTop: '6px' }}>
+              Setelah mengunggah, klik Simpan Profil agar CV tampil di situs.
+            </span>
+          </div>
+
           <button onClick={saveProfile} className="btn btn-primary" style={{ width: '100%', justifyContent: 'center' }}>
-            {saving === 'profile' ? 'Saving...' : <><FaSave /> Save Profile</>}
+            {saving === 'profile' ? 'Menyimpan...' : <><FaSave /> Simpan Profil</>}
           </button>
         </div>
       )}
@@ -240,11 +279,11 @@ export default function AdminProfile() {
           ))}
 
           <button onClick={addSocialLink} className="btn btn-outline" style={{ width: '100%', justifyContent: 'center', fontSize: '0.85rem' }}>
-            <FaPlus /> Add Social Link
+            <FaPlus /> Tambah Tautan Media Sosial
           </button>
 
           <button onClick={saveSocialLinks} className="btn btn-primary" style={{ width: '100%', justifyContent: 'center' }}>
-            <FaSave /> {saving === 'social' ? 'Saving...' : 'Save Social Links'}
+            <FaSave /> {saving === 'social' ? 'Menyimpan...' : 'Simpan Tautan Media Sosial'}
           </button>
         </div>
       )}
@@ -252,18 +291,18 @@ export default function AdminProfile() {
       {/* Skills Tab */}
       {activeTab === 'skills' && (
         <div className="glass" style={s.card}>
-          <h3 style={{ fontSize: '1rem', fontWeight: 600 }}>Add New Skill</h3>
+          <h3 style={{ fontSize: '1rem', fontWeight: 600 }}>Tambah Keahlian</h3>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'end', flexWrap: 'wrap' }}>
             <div style={{ ...s.field, flex: '1 1 150px' }}>
-              <label style={s.label}>Name</label>
-              <input style={s.input} value={newSkill.name} onChange={(e) => setNewSkill({ ...newSkill, name: e.target.value })} placeholder="e.g. React" />
+              <label style={s.label}>Nama</label>
+              <input style={s.input} value={newSkill.name} onChange={(e) => setNewSkill({ ...newSkill, name: e.target.value })} placeholder="misalnya React" />
             </div>
             <div style={{ ...s.field, flex: '1 1 120px' }}>
-              <label style={s.label}>Category</label>
-              <input style={s.input} value={newSkill.category} onChange={(e) => setNewSkill({ ...newSkill, category: e.target.value })} placeholder="Frontend" />
+              <label style={s.label}>Kategori</label>
+              <input style={s.input} value={newSkill.category} onChange={(e) => setNewSkill({ ...newSkill, category: e.target.value })} placeholder="Antarmuka Depan" />
             </div>
             <div style={{ ...s.field, flex: '0 0 80px' }}>
-              <label style={s.label}>Level %</label>
+              <label style={s.label}>Tingkat %</label>
               <input type="number" style={s.input} value={newSkill.proficiency} onChange={(e) => setNewSkill({ ...newSkill, proficiency: parseInt(e.target.value) || 0 })} min="0" max="100" />
             </div>
             <button onClick={addSkill} className="btn btn-primary" style={{ padding: '12px 20px', height: '44px' }}>
@@ -272,7 +311,7 @@ export default function AdminProfile() {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '24px' }}>
-            <h3 style={{ fontSize: '1rem', fontWeight: 600 }}>Manage Skills</h3>
+            <h3 style={{ fontSize: '1rem', fontWeight: 600 }}>Kelola Keahlian</h3>
             {skills.map((skill) => (
               <div key={skill.id} style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', padding: '12px', background: 'var(--bg-glass)', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
                 <input style={{ ...s.input, flex: '1 1 120px', padding: '8px 12px' }} value={skill.name} onChange={(e) => updateSkillLocal(skill.id, 'name', e.target.value)} onBlur={() => saveSkill(skill)} />

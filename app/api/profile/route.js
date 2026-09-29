@@ -10,14 +10,14 @@ export async function GET() {
     });
     return Response.json({ profile, socialLinks });
   } catch (error) {
-    return Response.json({ error: 'Failed to fetch profile' }, { status: 500 });
+    return Response.json({ error: 'Gagal mengambil data profil.' }, { status: 500 });
   }
 }
 
 export async function PUT(request) {
   try {
     const session = await getSession();
-    if (!session) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!session) return Response.json({ error: 'Akses tidak diizinkan.' }, { status: 401 });
 
     const body = await request.json();
     const { type, ...data } = body;
@@ -65,13 +65,11 @@ export async function PUT(request) {
       return Response.json(socialLinks);
     }
 
-    return Response.json({ error: 'Invalid type' }, { status: 400 });
+    return Response.json({ error: 'Jenis permintaan tidak valid.' }, { status: 400 });
   } catch (error) {
     console.error("Profile API Error Vercel:", error);
     return Response.json({ 
-      error: 'Failed to update profile', 
-      details: error.message, 
-      stack: error.stack 
+      error: 'Gagal memperbarui profil.',
     }, { status: 500 });
   }
 }

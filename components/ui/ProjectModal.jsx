@@ -6,6 +6,7 @@ import { FaExternalLinkAlt, FaGithub, FaChevronLeft, FaChevronRight, FaTimes } f
 export default function ProjectModal({ project, onClose }) {
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
   const mediaItems = project.media || [];
+  const videos = mediaItems.filter((item) => item.mediaType === 'video');
 
   useEffect(() => {
     const handleEsc = (e) => {
@@ -31,7 +32,15 @@ export default function ProjectModal({ project, onClose }) {
     }
   };
 
-  const categoryLabel = project.category === 'threeD' ? '3D Design' : project.category;
+  const categoryLabels = {
+    website: 'Situs Web',
+    android: 'Android',
+    threeD: 'Desain 3D',
+    video: 'Video',
+    graphic: 'Desain Grafis',
+    hardware: 'Perangkat Keras',
+  };
+  const categoryLabel = categoryLabels[project.category] || project.category;
 
   const renderMediaSection = () => {
     // 3D Design: Model Viewer
@@ -89,10 +98,10 @@ export default function ProjectModal({ project, onClose }) {
             )}
             {mediaItems.length > 1 && (
               <>
-                <button className="gallery-nav gallery-prev" onClick={prevMedia} aria-label="Previous media">
+                <button className="gallery-nav gallery-prev" onClick={prevMedia} aria-label="Media sebelumnya">
                   <FaChevronLeft />
                 </button>
-                <button className="gallery-nav gallery-next" onClick={nextMedia} aria-label="Next media">
+                <button className="gallery-nav gallery-next" onClick={nextMedia} aria-label="Media berikutnya">
                   <FaChevronRight />
                 </button>
               </>
@@ -109,7 +118,7 @@ export default function ProjectModal({ project, onClose }) {
                   {m.mediaType === 'video' ? (
                      <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0a0e27', fontSize: '1.2rem' }}>🎬</div>
                   ) : (
-                    <img src={m.mediaUrl} alt={`Thumbnail ${i + 1}`} />
+                    <img src={m.mediaUrl} alt={`Pratinjau ${i + 1}`} />
                   )}
                 </div>
               ))}
@@ -129,7 +138,7 @@ export default function ProjectModal({ project, onClose }) {
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <button className="modal-close" onClick={onClose} aria-label="Close modal">
+        <button className="modal-close" onClick={onClose} aria-label="Tutup jendela detail">
           <FaTimes />
         </button>
 
@@ -155,12 +164,12 @@ export default function ProjectModal({ project, onClose }) {
             <div className="modal-links">
               {project.projectUrl && (
                 <a href={project.projectUrl} target="_blank" rel="noopener noreferrer" className="btn btn-primary">
-                  <FaExternalLinkAlt /> Live Project
+                  <FaExternalLinkAlt /> Lihat Proyek
                 </a>
               )}
               {project.repoUrl && (
                 <a href={project.repoUrl} target="_blank" rel="noopener noreferrer" className="btn btn-outline">
-                  <FaGithub /> Source Code
+                  <FaGithub /> Kode Sumber
                 </a>
               )}
             </div>
@@ -169,7 +178,7 @@ export default function ProjectModal({ project, onClose }) {
           {/* Additional gallery links for 3D */}
           {(project.category === 'threeD' || project.category === 'video') && mediaItems.length > 0 && (
             <div style={{ marginTop: '24px' }}>
-              <h4 style={{ marginBottom: '12px', fontWeight: 600 }}>Gallery</h4>
+              <h4 style={{ marginBottom: '12px', fontWeight: 600 }}>Galeri</h4>
               <div className="gallery-thumbnails" style={{ background: 'transparent', padding: 0, gap: '12px' }}>
                 {mediaItems.map((m, i) => (
                   <div key={m.id || i} className="gallery-thumb" style={{ width: '120px', height: '80px', borderRadius: '8px' }}>

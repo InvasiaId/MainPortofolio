@@ -6,7 +6,7 @@ export async function POST(request) {
     const body = await request.json();
     await prisma.errorLog.create({
       data: {
-        errorMessage: body.errorMessage || 'Unknown error',
+        errorMessage: body.errorMessage || 'Kesalahan tidak diketahui',
         errorStack: body.errorStack || null,
         page: body.page || null,
         userAgent: body.userAgent || null,
@@ -21,7 +21,7 @@ export async function POST(request) {
 export async function GET(request) {
   try {
     const session = await getSession();
-    if (!session) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!session) return Response.json({ error: 'Akses tidak diizinkan.' }, { status: 401 });
 
     const { searchParams } = new URL(request.url);
     const limit = parseInt(searchParams.get('limit') || '50');
@@ -33,6 +33,6 @@ export async function GET(request) {
 
     return Response.json(errors);
   } catch {
-    return Response.json({ error: 'Failed to fetch errors' }, { status: 500 });
+    return Response.json({ error: 'Gagal mengambil catatan kesalahan.' }, { status: 500 });
   }
 }

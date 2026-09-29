@@ -25,19 +25,28 @@ export default function AdminDashboard() {
   }, []);
 
   const cards = [
-    { label: 'Total Projects', value: stats?.totalProjects || 0, icon: FaProjectDiagram, color: '#D6FF01' },
-    { label: 'Categories', value: Object.keys(stats?.categories || {}).length, icon: FaTh, color: '#3b82f6' },
-    { label: 'Total Views', value: stats?.totalViews || 0, icon: FaEye, color: '#10b981' },
-    { label: 'Today Views', value: stats?.todayViews || 0, icon: FaExclamationTriangle, color: '#f59e0b' },
+    { label: 'Jumlah Proyek', value: stats?.totalProjects || 0, icon: FaProjectDiagram, color: '#D6FF01' },
+    { label: 'Kategori', value: Object.keys(stats?.categories || {}).length, icon: FaTh, color: '#3b82f6' },
+    { label: 'Total Kunjungan', value: stats?.totalViews || 0, icon: FaEye, color: '#10b981' },
+    { label: 'Kunjungan Hari Ini', value: stats?.todayViews || 0, icon: FaExclamationTriangle, color: '#f59e0b' },
   ];
+
+    const categoryLabels = {
+      website: 'Situs Web',
+      android: 'Android',
+      threeD: 'Desain 3D',
+      video: 'Video',
+      graphic: 'Desain Grafis',
+      hardware: 'Perangkat Keras',
+    };
 
   return (
     <div>
       <h1 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '8px' }}>
-        <span className="gradient-text">Dashboard</span>
+        <span className="gradient-text">Ringkasan</span>
       </h1>
       <p style={{ color: 'var(--text-secondary)', marginBottom: '32px' }}>
-        Welcome back! Here&apos;s your portfolio overview.
+        Selamat datang kembali! Berikut ringkasan portofolio Anda.
       </p>
 
       <div style={styles.cardGrid}>
@@ -56,11 +65,11 @@ export default function AdminDashboard() {
 
       {stats && Object.keys(stats.categories).length > 0 && (
         <div className="glass" style={styles.chartCard}>
-          <h3 style={{ fontWeight: 700, marginBottom: '20px' }}>Projects by Category</h3>
+          <h3 style={{ fontWeight: 700, marginBottom: '20px' }}>Proyek berdasarkan Kategori</h3>
           <div style={styles.barChart}>
             {Object.entries(stats.categories).map(([cat, count]) => (
               <div key={cat} style={styles.barRow}>
-                <span style={styles.barLabel}>{cat === 'threeD' ? '3D Design' : cat}</span>
+                  <span style={styles.barLabel}>{categoryLabels[cat] || cat}</span>
                 <div style={styles.barTrack}>
                   <div
                     style={{

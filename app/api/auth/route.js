@@ -8,24 +8,24 @@ export async function POST(request) {
     const limit = rateLimit(`login:${ip}`, 5, 15 * 60 * 1000);
     if (!limit.allowed) {
       return Response.json(
-        { error: `Too many login attempts. Try again in ${limit.retryAfter}s` },
+        { error: `Terlalu banyak percobaan masuk. Coba lagi dalam ${limit.retryAfter} detik.` },
         { status: 429 }
       );
     }
 
     const { email, password } = await request.json();
     if (!email || !password) {
-      return Response.json({ error: 'Email and password required' }, { status: 400 });
+      return Response.json({ error: 'Email dan kata sandi wajib diisi.' }, { status: 400 });
     }
 
     const user = await prisma.adminUser.findUnique({ where: { email } });
     if (!user) {
-      return Response.json({ error: 'Invalid credentials' }, { status: 401 });
+      return Response.json({ error: 'Email atau kata sandi salah.' }, { status: 401 });
     }
 
     const isValid = await verifyPassword(password, user.passwordHash);
     if (!isValid) {
-      return Response.json({ error: 'Invalid credentials' }, { status: 401 });
+      return Response.json({ error: 'Email atau kata sandi salah.' }, { status: 401 });
     }
 
     const token = await signJWT({ userId: user.id, email: user.email });
@@ -33,7 +33,7 @@ export async function POST(request) {
 
     return Response.json({ success: true, user: { id: user.id, email: user.email } });
   } catch (error) {
-    return Response.json({ error: 'Login failed' }, { status: 500 });
+    return Response.json({ error: 'Gagal masuk.' }, { status: 500 });
   }
 }
 
@@ -54,6 +54,6 @@ export async function DELETE() {
     await clearSessionCookie();
     return Response.json({ success: true });
   } catch {
-    return Response.json({ error: 'Logout failed' }, { status: 500 });
+    return Response.json({ error: 'Gagal keluar.' }, { status: 500 });
   }
 }

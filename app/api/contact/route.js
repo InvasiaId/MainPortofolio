@@ -8,19 +8,19 @@ export async function POST(request) {
     const data = sanitizeObject(body);
 
     if (!data.name || !data.email || !data.message) {
-      return Response.json({ error: 'Missing required fields' }, { status: 400 });
+      return Response.json({ error: 'Nama, email, dan pesan wajib diisi.' }, { status: 400 });
     }
 
     const profile = await prisma.profile.findFirst();
     const toEmail = profile?.contactEmail;
 
     if (!toEmail) {
-      return Response.json({ error: 'Contact email not configured by admin' }, { status: 500 });
+      return Response.json({ error: 'Email kontak belum diatur oleh admin.' }, { status: 500 });
     }
 
     if (!process.env.SMTP_USER || !process.env.SMTP_PASS || !process.env.SMTP_HOST) {
       console.error('SMTP credentials missing in environment variables');
-      return Response.json({ error: 'Mail server not configured correctly' }, { status: 500 });
+      return Response.json({ error: 'Server email belum dikonfigurasi dengan benar.' }, { status: 500 });
     }
 
     const transporter = nodemailer.createTransport({
@@ -34,18 +34,18 @@ export async function POST(request) {
     });
 
     const mailOptions = {
-      from: process.env.SMTP_USER === 'resend' ? 'Portfolio Contact <onboarding@resend.dev>' : process.env.SMTP_USER,
+      from: process.env.SMTP_USER === 'resend' ? 'Kontak Portofolio <onboarding@resend.dev>' : process.env.SMTP_USER,
       replyTo: data.email,
       to: toEmail,
-      subject: `New Contact Form Message from ${data.name}`,
-      text: `Name: ${data.name}\nEmail: ${data.email}\n\nMessage:\n${data.message}`,
+      subject: `Pesan baru dari formulir kontak — ${data.name}`,
+      text: `Nama: ${data.name}\nEmail: ${data.email}\n\nPesan:\n${data.message}`,
       html: `
         <div style="font-family: sans-serif; padding: 20px;">
-          <h2 style="color: #333;">New Message from Portfolio</h2>
-          <p><strong>Name:</strong> ${data.name}</p>
+          <h2 style="color: #333;">Pesan Baru dari Portofolio</h2>
+          <p><strong>Nama:</strong> ${data.name}</p>
           <p><strong>Email:</strong> ${data.email}</p>
           <hr style="border: 1px solid #eaeaea; margin: 20px 0;" />
-          <p><strong>Message:</strong></p>
+          <p><strong>Pesan:</strong></p>
           <p style="white-space: pre-wrap;">${data.message}</p>
         </div>
       `,
@@ -56,6 +56,6 @@ export async function POST(request) {
 
   } catch (error) {
     console.error('Contact email error:', error);
-    return Response.json({ error: `Failed to send message: ${error.message}` }, { status: 500 });
+    return Response.json({ error: 'Pesan gagal dikirim karena terjadi kesalahan pada server.' }, { status: 500 });
   }
 }

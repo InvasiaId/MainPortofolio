@@ -35,9 +35,9 @@ export default function Skills({ skills }) {
         <div className="container">
           <div className="section-header">
             <h2 className="section-title">
-              My <span className="gradient-text">Skills</span>
+              <span className="gradient-text">Keahlian</span> Saya
             </h2>
-            <p className="section-subtitle">Add your skills through the admin panel</p>
+            <p className="section-subtitle">Tambahkan keahlian melalui panel admin.</p>
           </div>
         </div>
       </section>
@@ -49,9 +49,9 @@ export default function Skills({ skills }) {
       <div className="container">
         <div className="section-header">
           <h2 className="section-title">
-            My <span className="gradient-text">Skills</span>
+            <span className="gradient-text">Keahlian</span> Saya
           </h2>
-          <p className="section-subtitle">Technologies and tools I work with</p>
+          <p className="section-subtitle">Teknologi dan alat yang saya gunakan</p>
         </div>
 
         <div className="skills-grid reveal" ref={gridRef}>

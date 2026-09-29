@@ -6,12 +6,15 @@ export default function Toast({ message, type = 'success', onClose, duration = 3
 
   useEffect(() => {
     if (message) {
-      setIsVisible(true);
-      const timer = setTimeout(() => {
+      const showTimer = setTimeout(() => setIsVisible(true), 0);
+      const hideTimer = setTimeout(() => {
         setIsVisible(false);
         setTimeout(onClose, 300); // Wait for transition before fully unmounting
       }, duration);
-      return () => clearTimeout(timer);
+      return () => {
+        clearTimeout(showTimer);
+        clearTimeout(hideTimer);
+      };
     }
   }, [message, duration, onClose]);
 
@@ -43,7 +46,7 @@ export default function Toast({ message, type = 'success', onClose, duration = 3
       <span style={{ color: 'var(--text-primary)', fontSize: '0.95rem', fontWeight: 500 }}>
         {message}
       </span>
-      <button onClick={() => {
+      <button aria-label="Tutup notifikasi" onClick={() => {
         setIsVisible(false);
         setTimeout(onClose, 300);
       }} style={{

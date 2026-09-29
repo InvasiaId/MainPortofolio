@@ -5,12 +5,12 @@ import { FaPlus, FaEdit, FaTrash, FaTimes, FaCloudUploadAlt } from 'react-icons/
 import Toast from '@/components/ui/Toast';
 
 const CATEGORIES = [
-  { value: 'website', label: '🌐 Website' },
+  { value: 'website', label: '🌐 Situs Web' },
   { value: 'android', label: '📱 Android' },
-  { value: 'threeD', label: '🎨 3D Design' },
+  { value: 'threeD', label: '🎨 Desain 3D' },
   { value: 'video', label: '🎬 Video' },
-  { value: 'graphic', label: '🖼️ Graphic' },
-  { value: 'hardware', label: '⚙️ Hardware' },
+  { value: 'graphic', label: '🖼️ Desain Grafis' },
+  { value: 'hardware', label: '⚙️ Perangkat Keras' },
 ];
 
 const emptyProject = {
@@ -39,10 +39,10 @@ const Dropzone = ({ type, onUpload, label, accept }) => {
         onUpload(data.url);
         // Note: the parent handles the success toast since it manages overall state
       } else {
-        alert(data.error || 'Upload failed');
+        alert(data.error || 'Pengunggahan gagal.');
       }
     } catch {
-      alert('Network error during upload');
+      alert('Terjadi kesalahan jaringan saat mengunggah.');
     } finally {
       setLoading(false);
     }
@@ -84,9 +84,9 @@ const Dropzone = ({ type, onUpload, label, accept }) => {
       <label htmlFor={`upload-${type}`} style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <FaCloudUploadAlt style={{ fontSize: '2rem', color: isDrag ? 'var(--accent)' : 'var(--text-muted)' }} />
         <span style={{ fontSize: '0.9rem', marginTop: '8px', fontWeight: 600, color: 'var(--text-primary)' }}>
-          {loading ? 'Uploading...' : label}
+          {loading ? 'Mengunggah...' : label}
         </span>
-        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Drag & Drop or Click</span>
+        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Seret dan lepas atau klik</span>
       </label>
     </div>
   );
@@ -124,28 +124,28 @@ export default function AdminProjects() {
       fetchProjects();
       setEditing(null);
       setForm(emptyProject);
-      showToast(method === 'POST' ? 'Project created successfully!' : 'Project updated successfully!');
+      showToast(method === 'POST' ? 'Proyek berhasil dibuat!' : 'Proyek berhasil diperbarui!');
     } else {
       const err = await res.json();
-      showToast(err.error || 'Failed to save project', 'error');
+      showToast(err.error || 'Gagal menyimpan proyek.', 'error');
     }
   };
 
   const handleDelete = async (id) => {
-    if (!confirm('Delete this project?')) return;
+    if (!confirm('Hapus proyek ini?')) return;
     const res = await fetch(`/api/projects?id=${id}`, { method: 'DELETE' });
     if (res.ok) {
       fetchProjects();
-      showToast('Project deleted successfully!');
+      showToast('Proyek berhasil dihapus!');
     } else {
-      showToast('Failed to delete project', 'error');
+      showToast('Gagal menghapus proyek.', 'error');
     }
   };
 
   const handleUploadNewMedia = async (url, type) => {
     if (editing === 'new') {
       setForm({ ...form, media: [...form.media, { mediaUrl: url, mediaType: type }] });
-      showToast('Media uploaded! It will be saved when you create the project.');
+      showToast('Media berhasil diunggah dan akan disimpan saat proyek dibuat.');
     } else {
       // For existing project, directly save it to DB
       const res = await fetch('/api/media', {
@@ -157,9 +157,9 @@ export default function AdminProjects() {
         const newMedia = await res.json();
         setForm({ ...form, media: [...form.media, newMedia] });
         fetchProjects();
-        showToast('Media added to project successfully!');
+        showToast('Media berhasil ditambahkan ke proyek!');
       } else {
-        showToast('Media uploaded but failed to save to project.', 'error');
+        showToast('Media berhasil diunggah, tetapi gagal ditambahkan ke proyek.', 'error');
       }
     }
   };
@@ -167,15 +167,15 @@ export default function AdminProjects() {
   const handleDeleteMedia = async (index, mediaId) => {
     if (editing === 'new' || !mediaId) {
       setForm({ ...form, media: form.media.filter((_, i) => i !== index) });
-      showToast('Draft media removed');
+      showToast('Media draf dihapus.');
     } else {
       const res = await fetch(`/api/media?id=${mediaId}`, { method: 'DELETE' });
       if (res.ok) {
         setForm({ ...form, media: form.media.filter(m => m.id !== mediaId) });
         fetchProjects();
-        showToast('Media deleted successfully!');
+        showToast('Media berhasil dihapus!');
       } else {
-        showToast('Failed to delete media', 'error');
+        showToast('Gagal menghapus media.', 'error');
       }
     }
   };
@@ -215,44 +215,44 @@ export default function AdminProjects() {
       <div>
         <div style={s.formHeader}>
           <h1 style={s.pageTitle}>
-            {editing === 'new' ? 'New Project' : 'Edit Project'}
+            {editing === 'new' ? 'Proyek Baru' : 'Ubah Proyek'}
           </h1>
           <button onClick={() => { setEditing(null); setForm(emptyProject); }} style={s.cancelBtn}>
-            <FaTimes /> Cancel
+            <FaTimes /> Batal
           </button>
         </div>
 
         <div className="glass" style={s.formCard}>
           <div style={s.field}>
-            <label style={s.label}>Title *</label>
+            <label style={s.label}>Judul *</label>
             <input style={s.input} value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
           </div>
 
           <div style={s.field}>
-            <label style={s.label}>Category *</label>
+            <label style={s.label}>Kategori *</label>
             <select style={s.input} value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
               {CATEGORIES.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
             </select>
           </div>
 
           <div style={s.field}>
-            <label style={s.label}>Project Tag *</label>
+            <label style={s.label}>Jenis Proyek *</label>
             <select style={s.input} value={form.tag} onChange={(e) => setForm({ ...form, tag: e.target.value })}>
-              <option value="mainProject">Main Project</option>
-              <option value="funProject">Fun Project</option>
+              <option value="mainProject">Proyek Utama</option>
+              <option value="funProject">Proyek Santai</option>
             </select>
           </div>
 
           <div style={s.field}>
-            <label style={s.label}>Description</label>
+            <label style={s.label}>Deskripsi</label>
             <textarea style={{ ...s.input, minHeight: '120px' }} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
           </div>
 
           <div style={s.field}>
-            <label style={s.label}>Tech Stack</label>
+            <label style={s.label}>Teknologi yang Digunakan</label>
             <div style={{ display: 'flex', gap: '8px' }}>
-              <input style={{ ...s.input, flex: 1 }} value={techInput} onChange={(e) => setTechInput(e.target.value)} placeholder="Add technology..." onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addTech())} />
-              <button onClick={addTech} className="btn btn-outline" style={{ padding: '8px 16px' }}>Add</button>
+              <input style={{ ...s.input, flex: 1 }} value={techInput} onChange={(e) => setTechInput(e.target.value)} placeholder="Tambahkan teknologi..." onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addTech())} />
+              <button onClick={addTech} className="btn btn-outline" style={{ padding: '8px 16px' }}>Tambah</button>
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '8px' }}>
               {form.techStack.map((tech, i) => (
@@ -266,11 +266,11 @@ export default function AdminProjects() {
           {(form.category === 'website' || form.category === 'android') && (
             <>
               <div style={s.field}>
-                <label style={s.label}>Project URL</label>
+                <label style={s.label}>Tautan Proyek</label>
                 <input style={s.input} value={form.projectUrl} onChange={(e) => setForm({ ...form, projectUrl: e.target.value })} placeholder="https://..." />
               </div>
               <div style={s.field}>
-                <label style={s.label}>Repository URL</label>
+                <label style={s.label}>Tautan Repositori</label>
                 <input style={s.input} value={form.repoUrl} onChange={(e) => setForm({ ...form, repoUrl: e.target.value })} placeholder="https://github.com/..." />
               </div>
             </>
@@ -278,11 +278,11 @@ export default function AdminProjects() {
 
           {form.category === 'threeD' && (
             <div style={s.field}>
-              <label style={s.label}>3D Model Upload (.glb/.gltf)</label>
+              <label style={s.label}>Unggah Model 3D (.glb/.gltf)</label>
               {form.model3dUrl ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '12px', background: 'rgba(214,255,1,0.05)', border: '1px solid var(--accent)', borderRadius: '8px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <span style={{ fontSize: '0.85rem' }}>3D Model Uploaded</span>
+                    <span style={{ fontSize: '0.85rem' }}>Model 3D berhasil diunggah</span>
                     <button onClick={() => setForm({ ...form, model3dUrl: '' })} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer' }}><FaTimes /></button>
                   </div>
                   <div style={{ width: '100%', height: '200px', borderRadius: '8px', overflow: 'hidden', background: '#0a0e27' }}>
@@ -290,28 +290,28 @@ export default function AdminProjects() {
                   </div>
                 </div>
               ) : (
-                <Dropzone type="model" label="Upload 3D Model (.glb, .gltf)" accept=".glb,.gltf" onUpload={(url) => setForm({ ...form, model3dUrl: url })} />
+                <Dropzone type="model" label="Unggah Model 3D (.glb, .gltf)" accept=".glb,.gltf" onUpload={(url) => setForm({ ...form, model3dUrl: url })} />
               )}
             </div>
           )}
 
           <div style={{ ...s.field, flexDirection: 'row', alignItems: 'center', gap: '12px' }}>
             <input type="checkbox" id="featured" checked={form.featured} onChange={(e) => setForm({ ...form, featured: e.target.checked })} />
-            <label htmlFor="featured" style={{ ...s.label, marginBottom: 0 }}>Featured Project</label>
+            <label htmlFor="featured" style={{ ...s.label, marginBottom: 0 }}>Jadikan Proyek Unggulan</label>
           </div>
 
           <div style={s.field}>
-            <label style={s.label}>Display Order</label>
+            <label style={s.label}>Urutan Tampilan</label>
             <input type="number" style={s.input} value={form.displayOrder} onChange={(e) => setForm({ ...form, displayOrder: parseInt(e.target.value) || 0 })} />
           </div>
 
           {/* Media Upload available for ALL states (new & existing) */}
           <div style={{ marginTop: '24px', paddingTop: '24px', borderTop: '1px solid var(--border-glass)' }}>
-            <h3 style={{ fontWeight: 700, marginBottom: '16px' }}>Photos & Videos Gallery</h3>
+            <h3 style={{ fontWeight: 700, marginBottom: '16px' }}>Galeri Foto & Video</h3>
             
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
-              <Dropzone type="image" label="Upload Photo" accept="image/*" onUpload={(url) => handleUploadNewMedia(url, 'image')} />
-              <Dropzone type="video" label="Upload Video" accept="video/mp4,video/webm" onUpload={(url) => handleUploadNewMedia(url, 'video')} />
+              <Dropzone type="image" label="Unggah Foto" accept="image/*" onUpload={(url) => handleUploadNewMedia(url, 'image')} />
+              <Dropzone type="video" label="Unggah Video" accept="video/mp4,video/webm" onUpload={(url) => handleUploadNewMedia(url, 'video')} />
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '12px' }}>
@@ -331,7 +331,7 @@ export default function AdminProjects() {
           </div>
 
           <button onClick={handleSave} className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', marginTop: '16px' }}>
-            {editing === 'new' ? 'Create Project' : 'Save Changes'}
+            {editing === 'new' ? 'Buat Proyek' : 'Simpan Perubahan'}
           </button>
         </div>
         {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
@@ -343,14 +343,14 @@ export default function AdminProjects() {
   return (
     <div>
       <div style={s.formHeader}>
-        <h1 style={s.pageTitle}><span className="gradient-text">Projects</span></h1>
+        <h1 style={s.pageTitle}><span className="gradient-text">Proyek</span></h1>
         <button onClick={() => { setEditing('new'); setForm(emptyProject); }} className="btn btn-primary" style={{ padding: '10px 20px', fontSize: '0.85rem' }}>
-          <FaPlus /> New Project
+          <FaPlus /> Proyek Baru
         </button>
       </div>
 
       <div style={{ display: 'flex', gap: '6px', marginBottom: '24px', flexWrap: 'wrap' }}>
-        <button className={`filter-tab ${filterCat === 'all' ? 'active' : ''}`} onClick={() => setFilterCat('all')} style={{ fontSize: '0.8rem', padding: '6px 16px' }}>All ({projects.length})</button>
+        <button className={`filter-tab ${filterCat === 'all' ? 'active' : ''}`} onClick={() => setFilterCat('all')} style={{ fontSize: '0.8rem', padding: '6px 16px' }}>Semua ({projects.length})</button>
         {CATEGORIES.map((c) => {
           const count = projects.filter((p) => p.category === c.value).length;
           return <button key={c.value} className={`filter-tab ${filterCat === c.value ? 'active' : ''}`} onClick={() => setFilterCat(c.value)} style={{ fontSize: '0.8rem', padding: '6px 16px' }}>{c.label} ({count})</button>;
@@ -359,7 +359,7 @@ export default function AdminProjects() {
 
       {filtered.length === 0 ? (
         <div className="glass" style={{ padding: '60px', textAlign: 'center', color: 'var(--text-muted)' }}>
-          No projects yet. Click &quot;New Project&quot; to add one.
+          Belum ada proyek. Klik &quot;Proyek Baru&quot; untuk menambahkan proyek.
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -380,16 +380,16 @@ export default function AdminProjects() {
                 <div>
                   <div style={{ fontWeight: 600 }}>{project.title}</div>
                   <span className={`category-badge ${project.category}`} style={{ fontSize: '0.65rem', padding: '2px 8px' }}>
-                    {project.category === 'threeD' ? '3D' : project.category}
+                    {project.category === 'threeD' ? '3D' : CATEGORIES.find((category) => category.value === project.category)?.label.replace(/^\S+\s/, '') || project.category}
                   </span>
                   <span style={{ marginLeft: '6px', fontSize: '0.65rem', color: 'var(--accent)' }}>
-                    {project.tag === 'funProject' ? 'Fun Project' : 'Main Project'}
+                    {project.tag === 'funProject' ? 'Proyek Santai' : 'Proyek Utama'}
                   </span>
                 </div>
               </div>
               <div style={{ display: 'flex', gap: '8px' }}>
-                <button onClick={() => startEdit(project)} style={s.actionBtn}><FaEdit /></button>
-                <button onClick={() => handleDelete(project.id)} style={{ ...s.actionBtn, color: '#ef4444' }}><FaTrash /></button>
+                <button onClick={() => startEdit(project)} style={s.actionBtn} aria-label="Ubah proyek"><FaEdit /></button>
+                <button onClick={() => handleDelete(project.id)} style={{ ...s.actionBtn, color: '#ef4444' }} aria-label="Hapus proyek"><FaTrash /></button>
               </div>
             </div>
           ))}

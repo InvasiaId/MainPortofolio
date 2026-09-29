@@ -9,14 +9,14 @@ export async function GET() {
     });
     return Response.json(skills);
   } catch (error) {
-    return Response.json({ error: 'Failed to fetch skills' }, { status: 500 });
+    return Response.json({ error: 'Gagal mengambil data keahlian.' }, { status: 500 });
   }
 }
 
 export async function POST(request) {
   try {
     const session = await getSession();
-    if (!session) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!session) return Response.json({ error: 'Akses tidak diizinkan.' }, { status: 401 });
 
     const body = await request.json();
     const data = sanitizeObject(body);
@@ -33,19 +33,19 @@ export async function POST(request) {
 
     return Response.json(skill, { status: 201 });
   } catch (error) {
-    return Response.json({ error: 'Failed to create skill' }, { status: 500 });
+    return Response.json({ error: 'Gagal menambahkan keahlian.' }, { status: 500 });
   }
 }
 
 export async function PUT(request) {
   try {
     const session = await getSession();
-    if (!session) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!session) return Response.json({ error: 'Akses tidak diizinkan.' }, { status: 401 });
 
     const body = await request.json();
     const { id, ...data } = sanitizeObject(body);
 
-    if (!id) return Response.json({ error: 'Skill ID required' }, { status: 400 });
+    if (!id) return Response.json({ error: 'ID keahlian wajib diisi.' }, { status: 400 });
 
     const skill = await prisma.skill.update({
       where: { id: parseInt(id) },
@@ -54,23 +54,23 @@ export async function PUT(request) {
 
     return Response.json(skill);
   } catch (error) {
-    return Response.json({ error: 'Failed to update skill' }, { status: 500 });
+    return Response.json({ error: 'Gagal memperbarui keahlian.' }, { status: 500 });
   }
 }
 
 export async function DELETE(request) {
   try {
     const session = await getSession();
-    if (!session) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!session) return Response.json({ error: 'Akses tidak diizinkan.' }, { status: 401 });
 
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
 
-    if (!id) return Response.json({ error: 'Skill ID required' }, { status: 400 });
+    if (!id) return Response.json({ error: 'ID keahlian wajib diisi.' }, { status: 400 });
 
     await prisma.skill.delete({ where: { id: parseInt(id) } });
     return Response.json({ success: true });
   } catch (error) {
-    return Response.json({ error: 'Failed to delete skill' }, { status: 500 });
+    return Response.json({ error: 'Gagal menghapus keahlian.' }, { status: 500 });
   }
 }

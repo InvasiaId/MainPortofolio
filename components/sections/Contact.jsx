@@ -20,7 +20,7 @@ export default function Contact({ socialLinks }) {
     e.preventDefault();
 
     if (!formData.name || !formData.email || !formData.message) {
-      setStatus('Please fill in all fields.');
+      setStatus('Mohon lengkapi semua kolom.');
       return;
     }
 
@@ -39,10 +39,10 @@ export default function Contact({ socialLinks }) {
         setTimeout(() => setStatus(''), 5000);
       } else {
         const data = await res.json();
-        setStatus(data.error || 'Failed to send message. Please try again.');
+        setStatus(data.error || 'Pesan gagal dikirim. Silakan coba lagi.');
       }
     } catch {
-      setStatus('Network error. Please try again.');
+      setStatus('Terjadi kesalahan jaringan. Silakan coba lagi.');
     }
   };
 
@@ -51,17 +51,17 @@ export default function Contact({ socialLinks }) {
       <div className="container">
         <div className="section-header">
           <h2 className="section-title">
-            Get In <span className="gradient-text">Touch</span>
+            Hubungi <span className="gradient-text">Saya</span>
           </h2>
-          <p className="section-subtitle">Have a project in mind? Let&apos;s work together</p>
+          <p className="section-subtitle">Tertarik untuk berkolaborasi atau punya ide menarik?</p>
         </div>
 
         <div className="contact-grid">
           <div className="contact-info">
-            <h3>Let&apos;s Connect</h3>
+            <h3>Mari Terhubung</h3>
             <p>
-              Feel free to reach out for collaborations, freelance work, or just a friendly chat.
-              I&apos;m always open to discussing new projects and creative ideas.
+              Jangan ragu untuk menghubungi saya jika ingin berkolaborasi, bekerja sama dalam proyek, atau sekadar berdiskusi santai.
+              Saya selalu terbuka untuk membicarakan proyek baru, ide kreatif, maupun peluang menarik lainnya.
             </p>
 
             {socialLinks && socialLinks.length > 0 && (
@@ -86,11 +86,11 @@ export default function Contact({ socialLinks }) {
 
           <form className="contact-form glass" style={{ padding: '32px' }} onSubmit={handleSubmit}>
             <div className="form-group">
-              <label htmlFor="contact-name">Name</label>
+              <label htmlFor="contact-name">Nama</label>
               <input
                 id="contact-name"
                 type="text"
-                placeholder="Your Name"
+                placeholder="Nama Kamu"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               />
@@ -101,17 +101,17 @@ export default function Contact({ socialLinks }) {
               <input
                 id="contact-email"
                 type="email"
-                placeholder="your@email.com"
+                placeholder="namakamu@email.com"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="contact-message">Message</label>
+              <label htmlFor="contact-message">Pesan</label>
               <textarea
                 id="contact-message"
-                placeholder="Tell me about your project..."
+                placeholder="Ceritakan tentang proyekmu..."
                 value={formData.message}
                 onChange={(e) => setFormData({ ...formData, message: e.target.value })}
               />
@@ -123,7 +123,7 @@ export default function Contact({ socialLinks }) {
               style={{ width: '100%', justifyContent: 'center' }}
               disabled={status === 'sending'}
             >
-              {status === 'sending' ? 'Sending...' : status === 'sent' ? '✅ Sent!' : 'Send Message'}
+              {status === 'sending' ? 'Mengirim...' : status === 'sent' ? '✅ Terkirim!' : 'Kirim Pesan'}
             </button>
 
             {status && status !== 'sending' && status !== 'sent' && (
