@@ -48,20 +48,6 @@ export default function About({ profile }) {
               {profile?.bio || 'Tuliskan biografi Anda di sini. Ceritakan latar belakang, pengalaman, dan minat Anda dalam menciptakan pengalaman digital.'}
             </p>
 
-            <a
-              href={resumeDownloadUrl || undefined}
-              className="btn btn-primary"
-              style={{ marginTop: '20px', opacity: resumeDownloadUrl ? 1 : 0.55 }}
-              aria-disabled={!resumeDownloadUrl}
-              title={resumeDownloadUrl ? 'Unduh Curriculum Vitae' : 'CV belum diunggah oleh admin'}
-              onClick={(event) => {
-                if (!resumeDownloadUrl) event.preventDefault();
-              }}
-              download="CV.pdf"
-            >
-              <FaDownload /> Unduh CV
-            </a>
-
             <div className="about-stats">
               <div className="stat-card glass">
                 <div className="stat-number gradient-text">5+</div>
@@ -76,6 +62,20 @@ export default function About({ profile }) {
                 <div className="stat-label">Kategori Keahlian</div>
               </div>
             </div>
+
+            <a
+              href={resumeDownloadUrl || undefined}
+              className="btn btn-primary"
+              style={{ marginTop: '20px', opacity: resumeDownloadUrl ? 1 : 0.55 }}
+              aria-disabled={!resumeDownloadUrl}
+              title={resumeDownloadUrl ? 'Unduh Curriculum Vitae' : 'CV belum diunggah oleh admin'}
+              onClick={(event) => {
+                if (!resumeDownloadUrl) event.preventDefault();
+              }}
+              download="CV.pdf"
+            >
+              <FaDownload /> Unduh CV
+            </a>
           </div>
         </div>
       </div>
