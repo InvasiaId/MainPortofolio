@@ -1,4 +1,5 @@
 import prisma from '@/lib/prisma';
+import { revalidatePath } from 'next/cache';
 import { getSession } from '@/lib/auth';
 import { sanitizeObject } from '@/lib/sanitize';
 
@@ -43,6 +44,7 @@ export async function PUT(request) {
       } else {
         profile = await prisma.profile.create({ data: updateData });
       }
+      revalidatePath('/', 'page');
       return Response.json(profile);
     }
 
