@@ -548,13 +548,50 @@ img {
   font-weight: 700;
 }
 
+.projects-carousel {
+  overflow-x: auto;
+  scrollbar-width: none;
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.projects-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.projects-carousel:active {
+  cursor: grabbing;
+}
+
+.projects-track {
+  display: flex;
+  width: max-content;
+}
+
 .projects-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  display: flex;
+  flex: 0 0 auto;
   gap: 28px;
+  width: max-content;
+}
+
+.projects-empty {
+  padding: 60px 0;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.carousel-hint {
+  margin-top: 18px;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  text-align: center;
 }
 
 .project-card {
+  flex: 0 0 340px;
   border-radius: var(--radius-lg);
   overflow: hidden;
   cursor: pointer;
@@ -1053,7 +1090,7 @@ select option {
   }
 
   .projects-grid {
-    grid-template-columns: 1fr;
+    gap: 18px;
   }
 
   .contact-grid {
@@ -1085,6 +1122,10 @@ select option {
 }
 
 @media (max-width: 480px) {
+  .project-card {
+    flex-basis: min(340px, 82vw);
+  }
+
   .hero-name {
     font-size: 1.8rem;
   }
