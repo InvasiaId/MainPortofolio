@@ -50,7 +50,7 @@ export default function About({ profile }) {
 
             <div className="about-stats">
               <div className="stat-card glass">
-                <div className="stat-number gradient-text">5+</div>
+                <div className="stat-number gradient-text">3+</div>
                 <div className="stat-label">Tahun Pengalaman</div>
               </div>
               <div className="stat-card glass">
@@ -58,7 +58,7 @@ export default function About({ profile }) {
                 <div className="stat-label">Proyek Selesai</div>
               </div>
               <div className="stat-card glass">
-                <div className="stat-number gradient-text">6</div>
+                <div className="stat-number gradient-text">11</div>
                 <div className="stat-label">Kategori Keahlian</div>
               </div>
             </div>
