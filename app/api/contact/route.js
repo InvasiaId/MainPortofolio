@@ -25,7 +25,7 @@ export async function POST(request) {
 
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
-      port: process.env.SMTP_PORT || 587,
+      port: Number(process.env.SMTP_PORT) || 587,
       secure: process.env.SMTP_SECURE === 'true',
       auth: {
         user: process.env.SMTP_USER,
@@ -33,8 +33,12 @@ export async function POST(request) {
       },
     });
 
+    const senderEmail = process.env.SMTP_USER === 'resend' 
+      ? 'onboarding@resend.dev' 
+      : process.env.SMTP_USER;
+
     const mailOptions = {
-      from: process.env.SMTP_USER === 'resend' ? 'Kontak Portofolio <onboarding@resend.dev>' : process.env.SMTP_USER,
+      from: `"Kontak Portofolio" <${senderEmail}>`,
       replyTo: data.email,
       to: toEmail,
       subject: `Pesan baru dari formulir kontak — ${data.name}`,
