@@ -12,6 +12,11 @@ const TYPE_CONFIG = {
 export default function Experience({ experiences = [] }) {
   const [activeTab, setActiveTab] = useState('all');
   const [selectedDoc, setSelectedDoc] = useState(null);
+  const [imageError, setImageError] = useState(false);
+
+  useEffect(() => {
+    setImageError(false);
+  }, [selectedDoc]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -54,19 +59,19 @@ export default function Experience({ experiences = [] }) {
                 className={`filter-tab ${activeTab === 'all' ? 'active' : ''}`}
                 onClick={() => setActiveTab('all')}
               >
-                🎯 Semua
+                Semua
               </button>
               <button
                 className={`filter-tab ${activeTab === 'work' ? 'active' : ''}`}
                 onClick={() => setActiveTab('work')}
               >
-                💼 Karier & Proyek
+                Karier & Pekerjaan
               </button>
               <button
                 className={`filter-tab ${activeTab === 'education' ? 'active' : ''}`}
                 onClick={() => setActiveTab('education')}
               >
-                🎓 Pendidikan & Sertifikasi
+                Pendidikan & Sertifikasi
               </button>
             </div>
           </div>
@@ -330,21 +335,34 @@ export default function Experience({ experiences = [] }) {
                   overflow: 'hidden',
                   border: '1px solid var(--border-glass)',
                   maxHeight: '65vh',
+                  minHeight: '200px',
+                  width: '100%',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
+                  background: 'rgba(255, 255, 255, 0.02)',
                 }}
               >
-                <img
-                  src={selectedDoc.imageUrl}
-                  alt={selectedDoc.title}
-                  style={{
-                    maxWidth: '100%',
-                    maxHeight: '65vh',
-                    objectFit: 'contain',
-                    display: 'block',
-                  }}
-                />
+                {imageError ? (
+                  <div style={{ textAlign: 'center', padding: '36px 20px', color: 'var(--text-muted)' }}>
+                    <FaImage style={{ fontSize: '2.5rem', marginBottom: '12px', opacity: 0.4 }} />
+                    <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                      Gambar dokumentasi tidak dapat dimuat atau berkas telah dipindahkan.
+                    </p>
+                  </div>
+                ) : (
+                  <img
+                    src={selectedDoc.imageUrl}
+                    alt={selectedDoc.title}
+                    onError={() => setImageError(true)}
+                    style={{
+                      maxWidth: '100%',
+                      maxHeight: '65vh',
+                      objectFit: 'contain',
+                      display: 'block',
+                    }}
+                  />
+                )}
               </div>
             </div>
 

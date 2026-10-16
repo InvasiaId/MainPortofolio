@@ -99,6 +99,10 @@ export async function PUT(request) {
       return Response.json({ error: 'Tautan proyek tidak valid.' }, { status: 400 });
     }
 
+    if (data.repoUrl && !isValidUrl(data.repoUrl)) {
+      return Response.json({ error: 'Tautan repositori tidak valid.' }, { status: 400 });
+    }
+
     const project = await prisma.project.update({
       where: { id: parseInt(id) },
       data: {

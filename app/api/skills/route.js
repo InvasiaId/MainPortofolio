@@ -21,6 +21,10 @@ export async function POST(request) {
     const body = await request.json();
     const data = sanitizeObject(body);
 
+    if (!data.name || !data.name.trim()) {
+      return Response.json({ error: 'Nama keahlian wajib diisi.' }, { status: 400 });
+    }
+
     const skill = await prisma.skill.create({
       data: {
         name: data.name,

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { FaLinkedin, FaGithub, FaDribbble, FaInstagram, FaTiktok, FaWhatsapp } from 'react-icons/fa';
+import { FaLinkedin, FaGithub, FaDribbble, FaInstagram, FaTiktok, FaWhatsapp, FaDownload, FaUser } from 'react-icons/fa';
 
 const SOCIAL_ICONS = {
   linkedin: FaLinkedin,
@@ -118,13 +118,44 @@ function ParticleCanvas() {
 }
 
 export default function Hero({ profile, socialLinks }) {
+  const resumeDownloadUrl = profile?.resumeUrl
+    ? `${profile.resumeUrl}${profile.resumeUrl.includes('?') ? '&' : '?'}download=1`
+    : null;
+
   return (
     <section className="hero" id="hero">
       <ParticleCanvas />
       <div className="container">
         <div className="hero-content">
           <div className="hero-text">
-            <p className="hero-greeting">👋 Halo, saya</p>
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '6px 14px',
+                borderRadius: '999px',
+                background: 'rgba(16, 185, 129, 0.12)',
+                border: '1px solid rgba(16, 185, 129, 0.35)',
+                color: '#10b981',
+                fontSize: '0.82rem',
+                fontWeight: 600,
+                marginBottom: '14px',
+              }}
+            >
+              <span
+                style={{
+                  width: '8px',
+                  height: '8px',
+                  borderRadius: '50%',
+                  background: '#10b981',
+                  boxShadow: '0 0 8px #10b981',
+                  display: 'inline-block',
+                }}
+              />
+              Tersedia untuk Full-Time / Magang / Freelance
+            </div>
+            <p className="hero-greeting">Halo, saya</p>
             <h1 className="hero-name">
               <span className="gradient-text">{profile?.name || 'Nama Anda'}</span>
             </h1>
@@ -135,6 +166,17 @@ export default function Hero({ profile, socialLinks }) {
               <a href="#projects" className="btn btn-primary">
                 Lihat Karya Saya
               </a>
+              {resumeDownloadUrl && (
+                <a
+                  href={resumeDownloadUrl}
+                  className="btn btn-outline"
+                  download="CV_M_Dandi_Fadli.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <FaDownload /> Unduh CV
+                </a>
+              )}
               <a href="#contact" className="btn btn-outline">
                 Hubungi Saya
               </a>
@@ -163,7 +205,9 @@ export default function Hero({ profile, socialLinks }) {
               {profile?.heroPhotoUrl ? (
                 <img src={profile.heroPhotoUrl} alt={profile.name || 'Foto profil'} />
               ) : (
-                <div className="hero-image-placeholder">👤</div>
+                <div className="hero-image-placeholder">
+                  <FaUser style={{ fontSize: '3rem', opacity: 0.4 }} />
+                </div>
               )}
             </div>
           </div>

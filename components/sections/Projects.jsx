@@ -1,34 +1,35 @@
 'use client';
 
 import { useState, useMemo, useRef, useLayoutEffect } from 'react';
+import { FaCode, FaCube, FaMobileAlt, FaVideo, FaPalette, FaMicrochip, FaFolder } from 'react-icons/fa';
 import ProjectModal from '@/components/ui/ProjectModal';
 
 const CATEGORY_LABELS = {
-  all: '🎯 Semua',
-  website: '🌐 Situs Web',
-  android: '📱 Android',
-  threeD: '🎨 Desain 3D',
-  video: '🎬 Video',
-  graphic: '🖼️ Desain Grafis',
-  hardware: '⚙️ Perangkat Keras',
+  all: 'Semua',
+  website: 'Situs Web',
+  android: 'Android & AR',
+  threeD: 'Desain 3D',
+  video: 'Video & Motion',
+  graphic: 'Desain Grafis',
+  hardware: 'Hardware & IoT',
 };
 
 const CATEGORY_NAMES = {
   website: 'Situs Web',
-  android: 'Android',
+  android: 'Android & AR',
   threeD: 'Desain 3D',
-  video: 'Video',
+  video: 'Video & Motion',
   graphic: 'Desain Grafis',
-  hardware: 'Perangkat Keras',
+  hardware: 'Hardware & IoT',
 };
 
 const CATEGORY_ICONS = {
-  website: '🌐',
-  android: '📱',
-  threeD: '🎨',
-  video: '🎬',
-  graphic: '🖼️',
-  hardware: '⚙️',
+  website: FaCode,
+  android: FaMobileAlt,
+  threeD: FaCube,
+  video: FaVideo,
+  graphic: FaPalette,
+  hardware: FaMicrochip,
 };
 
 function ProjectCards({ projects, onSelect, emptyMessage, carousel = false }) {
@@ -122,7 +123,10 @@ function ProjectCards({ projects, onSelect, emptyMessage, carousel = false }) {
             <img src={thumbnail.mediaUrl} alt={project.title} loading="lazy" draggable="false" />
           ) : (
             <div className="project-card-image-placeholder">
-              {CATEGORY_ICONS[project.category] || '📁'}
+              {(() => {
+                const IconComponent = CATEGORY_ICONS[project.category] || FaFolder;
+                return <IconComponent style={{ fontSize: '2.5rem', opacity: 0.5 }} />;
+              })()}
             </div>
           )}
           <div className="project-card-overlay">
@@ -211,7 +215,9 @@ export default function Projects({ projects }) {
             <h2 className="section-title">
               <span className="gradient-text">Proyek</span> Saya
             </h2>
-            <p className="section-subtitle">Jelajahi karya saya di berbagai bidang.</p>
+            <p className="section-subtitle">
+              Kumpulan proyek web, aplikasi mobile, desain 3D, dan eksperimen perangkat keras yang pernah saya kerjakan.
+            </p>
           </div>
 
           <div className="filter-tabs">

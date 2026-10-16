@@ -1,15 +1,22 @@
 import prisma from '@/lib/prisma';
 import { getSession } from '@/lib/auth';
+import { getClientIp, rateLimit } from '@/lib/sanitize';
 
 export async function POST(request) {
   try {
+    const ip = getClientIp(request);
+    const limit = rateLimit(`errors:${ip}`, 10, 60 * 1000);
+    if (!limit.allowed) {
+      return Response.json({ success: false, error: 'Rate limit exceeded' }, { status: 429 });
+    }
+
     const body = await request.json();
     await prisma.errorLog.create({
       data: {
-        errorMessage: body.errorMessage || 'Kesalahan tidak diketahui',
-        errorStack: body.errorStack || null,
-        page: body.page || null,
-        userAgent: body.userAgent || null,
+        errorMessage: String(body.errorMessage || 'Kesalahan tidak diketahui').slice(0, 500),
+        errorStack: body.errorStack ? String(body.errorStack).slice(0, 2000) : null,
+        page: body.page ? String(body.page).slice(0, 200) : null,
+        userAgent: body.userAgent ? String(body.userAgent).slice(0, 300) : null,
       },
     });
     return Response.json({ success: true }, { status: 201 });

@@ -37,7 +37,7 @@ export default function ToolsTeaser() {
                 marginBottom: '14px',
               }}
             >
-              <FaGift /> Public Utility & Open Experiments
+              <FaGift /> Utilitas & Eksperimen Digital
             </div>
             <h3 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '10px' }}>
               Mencari <span className="gradient-text">Alat Digital Gratis</span>?

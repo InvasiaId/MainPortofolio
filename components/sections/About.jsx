@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useEffect } from 'react';
-import { FaDownload } from 'react-icons/fa';
+import { FaDownload, FaUser } from 'react-icons/fa';
 
 export default function About({ profile, stats }) {
   const ref = useRef(null);
@@ -33,7 +33,9 @@ export default function About({ profile, stats }) {
           <h2 className="section-title">
             Tentang <span className="gradient-text">Saya</span>
           </h2>
-          <p className="section-subtitle">Kenali siapa saya dan apa yang saya sukai</p>
+          <p className="section-subtitle">
+            Latar belakang, fokus teknologi, dan pendekatan saya dalam membangun perangkat lunak.
+          </p>
         </div>
 
         <div className="about-content">
@@ -42,7 +44,7 @@ export default function About({ profile, stats }) {
               {profile?.photoUrl ? (
                 <img src={profile.photoUrl} alt={profile?.name || 'Foto profil'} />
               ) : (
-                '📸'
+                <FaUser style={{ fontSize: '3rem', opacity: 0.35 }} />
               )}
             </div>
           </div>

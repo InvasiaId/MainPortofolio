@@ -1,13 +1,19 @@
 import prisma from '@/lib/prisma';
 import { getSession } from '@/lib/auth';
+import { getClientIp, rateLimit } from '@/lib/sanitize';
 
 export async function POST(request) {
   try {
+    const ipAddress = getClientIp(request);
+
+    // Limit to max 60 hits per minute per IP
+    const limit = rateLimit(`analytics:${ipAddress}`, 60, 60 * 1000);
+    if (!limit.allowed) {
+      return Response.json({ success: false, error: 'Rate limit exceeded' }, { status: 429 });
+    }
+
     const body = await request.json();
-    const page = body.page || '/';
-    
-    // Get client IP to prevent spammy refresh counting
-    const ipAddress = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
+    const page = String(body.page || '/').slice(0, 100);
 
     // Prevent counting the same IP on the same page within the last 2 hours
     const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60 * 1000);
@@ -23,12 +29,12 @@ export async function POST(request) {
       await prisma.pageView.create({
         data: {
           page,
-          referrer: body.referrer || null,
-          country: body.country || null,
-          device: body.device || null,
-          browser: body.browser || null,
-          sessionId: body.sessionId || null,
-          ipAddress,
+          referrer: body.referrer ? String(body.referrer).slice(0, 250) : null,
+          country: body.country ? String(body.country).slice(0, 50) : null,
+          device: body.device ? String(body.device).slice(0, 50) : null,
+          browser: body.browser ? String(body.browser).slice(0, 50) : null,
+          sessionId: body.sessionId ? String(body.sessionId).slice(0, 100) : null,
+          ipAddress: ipAddress.slice(0, 50),
         },
       });
     }

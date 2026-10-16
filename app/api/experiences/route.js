@@ -1,6 +1,6 @@
 import prisma from '@/lib/prisma';
 import { getSession } from '@/lib/auth';
-import { sanitizeObject } from '@/lib/sanitize';
+import { sanitizeObject, isValidUrl } from '@/lib/sanitize';
 
 const VALID_TYPES = ['work', 'education', 'certification'];
 
@@ -29,6 +29,10 @@ export async function POST(request) {
 
     if (data.type && !VALID_TYPES.includes(data.type)) {
       return Response.json({ error: 'Tipe pengalaman tidak valid.' }, { status: 400 });
+    }
+
+    if (data.imageUrl && !isValidUrl(data.imageUrl)) {
+      return Response.json({ error: 'Tautan gambar dokumen tidak valid.' }, { status: 400 });
     }
 
     const exp = await prisma.experience.create({
@@ -61,6 +65,10 @@ export async function PUT(request) {
 
     if (data.type && !VALID_TYPES.includes(data.type)) {
       return Response.json({ error: 'Tipe pengalaman tidak valid.' }, { status: 400 });
+    }
+
+    if (data.imageUrl && !isValidUrl(data.imageUrl)) {
+      return Response.json({ error: 'Tautan gambar dokumen tidak valid.' }, { status: 400 });
     }
 
     const exp = await prisma.experience.update({

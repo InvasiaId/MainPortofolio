@@ -1,6 +1,12 @@
 import nodemailer from 'nodemailer';
+import { getSession } from '@/lib/auth';
 
 export async function GET(request) {
+  const session = await getSession();
+  if (!session) {
+    return Response.json({ error: 'Akses tidak diizinkan.' }, { status: 401 });
+  }
+
   const host = process.env.SMTP_HOST || 'EMPTY';
   const user = process.env.SMTP_USER || 'EMPTY';
   const pass = process.env.SMTP_PASS || 'EMPTY';

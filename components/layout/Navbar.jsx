@@ -54,7 +54,7 @@ export default function Navbar() {
             }
           }}
         >
-          Portofolio
+          M. Dandi Fadli
         </Link>
 
         <ul className={`nav-links ${menuOpen ? 'open' : ''}`}>

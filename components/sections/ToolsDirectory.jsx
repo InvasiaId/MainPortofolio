@@ -56,7 +56,7 @@ export default function ToolsDirectory({ tools = [] }) {
             marginBottom: '16px',
           }}
         >
-          🎁 Public Lab & Free Utilities
+          Eksperimen & Utilitas Digital
         </span>
         <h1 className="section-title" style={{ fontSize: '2.5rem', marginBottom: '16px' }}>
           Alat & Proyek <span className="gradient-text">Gratis</span>

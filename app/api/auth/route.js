@@ -1,10 +1,10 @@
 import prisma from '@/lib/prisma';
 import { verifyPassword, signJWT, setSessionCookie, clearSessionCookie, getSession } from '@/lib/auth';
-import { rateLimit } from '@/lib/sanitize';
+import { rateLimit, getClientIp } from '@/lib/sanitize';
 
 export async function POST(request) {
   try {
-    const ip = request.headers.get('x-forwarded-for') || 'unknown';
+    const ip = getClientIp(request);
     const limit = rateLimit(`login:${ip}`, 5, 15 * 60 * 1000);
     if (!limit.allowed) {
       return Response.json(

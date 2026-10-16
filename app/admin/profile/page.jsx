@@ -13,7 +13,7 @@ const PLATFORMS = [
 ];
 
 export default function AdminProfile() {
-  const [profile, setProfile] = useState({ name: '', tagline: '', bio: '', photoUrl: '', heroPhotoUrl: '', resumeUrl: '', contactEmail: '' });
+  const [profile, setProfile] = useState({ name: '', tagline: '', bio: '', photoUrl: '', heroPhotoUrl: '', resumeUrl: '', contactEmail: '', whatsappNumber: '' });
   const [socialLinks, setSocialLinks] = useState([]);
   const [skills, setSkills] = useState([]);
   const [newSkill, setNewSkill] = useState({ name: '', category: 'Frontend', proficiency: 50 });
@@ -149,9 +149,9 @@ export default function AdminProfile() {
   };
 
   const TABS = [
-    { key: 'profile', label: '👤 Profil' },
-    { key: 'social', label: '🔗 Media Sosial' },
-    { key: 'skills', label: '⚡ Keahlian' },
+    { key: 'profile', label: 'Profil' },
+    { key: 'social', label: 'Media Sosial' },
+    { key: 'skills', label: 'Keahlian' },
   ];
 
   return (
@@ -231,6 +231,11 @@ export default function AdminProfile() {
           <div style={s.field}>
             <label style={s.label}>Email Kontak (untuk formulir kontak situs)</label>
             <input type="email" style={s.input} value={profile.contactEmail || ''} onChange={(e) => setProfile({ ...profile, contactEmail: e.target.value })} placeholder="email@gmail.com" />
+          </div>
+
+          <div style={s.field}>
+            <label style={s.label}>Nomor WhatsApp (format internasional tanpa +, contoh: 6281234567890)</label>
+            <input type="text" style={s.input} value={profile.whatsappNumber || ''} onChange={(e) => setProfile({ ...profile, whatsappNumber: e.target.value })} placeholder="628xxxxxxxxxx" />
           </div>
 
           <div style={s.field}>

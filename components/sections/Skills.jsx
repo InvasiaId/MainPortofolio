@@ -79,7 +79,7 @@ export default function Skills({ skills }) {
                 className={`filter-tab ${activeCategory === 'all' ? 'active' : ''}`}
                 onClick={() => setActiveCategory('all')}
               >
-                🎯 Semua Bidang
+                Semua Bidang
               </button>
               {categories.map((cat) => (
                 <button

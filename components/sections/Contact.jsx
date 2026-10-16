@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { FaLinkedin, FaGithub, FaDribbble, FaInstagram, FaTiktok, FaWhatsapp } from 'react-icons/fa';
-import { rateLimit } from '@/lib/sanitize';
 
 const SOCIAL_ICONS = {
   linkedin: FaLinkedin,
@@ -20,7 +19,11 @@ export default function Contact({ socialLinks, profile }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.name || !formData.email || !formData.message) {
+    const name = formData.name.trim();
+    const email = formData.email.trim();
+    const message = formData.message.trim();
+
+    if (!name || !email || !message) {
       setStatus('Mohon lengkapi semua kolom.');
       return;
     }
@@ -54,15 +57,15 @@ export default function Contact({ socialLinks, profile }) {
           <h2 className="section-title">
             Hubungi <span className="gradient-text">Saya</span>
           </h2>
-          <p className="section-subtitle">Tertarik untuk berkolaborasi atau punya ide menarik?</p>
+          <p className="section-subtitle">Punya tawaran proyek, peluang kerja sama, atau sekadar ingin berdiskusi? Silakan hubungi saya.</p>
         </div>
 
         <div className="contact-grid">
           <div className="contact-info">
-            <h3>Mari Terhubung</h3>
+            <h3>Kontak Langsung</h3>
             <p>
-              Jangan ragu untuk menghubungi saya jika ingin berkolaborasi, bekerja sama dalam proyek, atau sekadar berdiskusi santai.
-              Saya selalu terbuka untuk membicarakan proyek baru, ide kreatif, maupun peluang menarik lainnya.
+              Saya selalu terbuka untuk peluang kerja sama baru—baik posisi full-time, magang, maupun proyek freelance.
+              Kirimkan pesan melalui formulir di samping, atau hubungi saya langsung melalui WhatsApp dan media sosial di bawah ini.
             </p>
 
             {profile?.whatsappNumber && (
@@ -117,6 +120,8 @@ export default function Contact({ socialLinks, profile }) {
                 id="contact-name"
                 type="text"
                 placeholder="Nama Kamu"
+                maxLength={100}
+                required
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               />
@@ -128,6 +133,8 @@ export default function Contact({ socialLinks, profile }) {
                 id="contact-email"
                 type="email"
                 placeholder="namakamu@email.com"
+                maxLength={150}
+                required
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               />
@@ -138,6 +145,8 @@ export default function Contact({ socialLinks, profile }) {
               <textarea
                 id="contact-message"
                 placeholder="Ceritakan tentang proyekmu..."
+                maxLength={3000}
+                required
                 value={formData.message}
                 onChange={(e) => setFormData({ ...formData, message: e.target.value })}
               />
