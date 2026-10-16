@@ -3,11 +3,14 @@
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { FaHome, FaProjectDiagram, FaUser, FaChartBar, FaSignOutAlt } from 'react-icons/fa';
+import { FaHome, FaProjectDiagram, FaUser, FaChartBar, FaSignOutAlt, FaBriefcase, FaLayerGroup, FaTools } from 'react-icons/fa';
 
 const NAV_ITEMS = [
   { href: '/admin', label: 'Ringkasan', icon: FaHome },
   { href: '/admin/projects', label: 'Proyek', icon: FaProjectDiagram },
+  { href: '/admin/experiences', label: 'Pengalaman', icon: FaBriefcase },
+  { href: '/admin/skills', label: 'Keahlian', icon: FaLayerGroup },
+  { href: '/admin/tools', label: 'Tools Gratis', icon: FaTools },
   { href: '/admin/profile', label: 'Profil', icon: FaUser },
   { href: '/admin/monitoring', label: 'Pemantauan', icon: FaChartBar },
 ];

@@ -9,10 +9,12 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const category = searchParams.get('category');
     const featured = searchParams.get('featured');
+    const tag = searchParams.get('tag');
 
     const where = {};
     if (category && category !== 'all') where.category = category;
     if (featured === 'true') where.featured = true;
+    if (tag && tag !== 'all') where.tag = tag;
 
     const projects = await prisma.project.findMany({
       where,

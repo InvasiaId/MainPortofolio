@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { FaProjectDiagram, FaTh, FaEye, FaExclamationTriangle } from 'react-icons/fa';
+import { FaProjectDiagram, FaBriefcase, FaLayerGroup, FaTools, FaEye, FaExclamationTriangle } from 'react-icons/fa';
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState(null);
@@ -10,13 +10,23 @@ export default function AdminDashboard() {
     Promise.all([
       fetch('/api/projects').then((r) => r.json()),
       fetch('/api/analytics?period=30d').then((r) => r.json()).catch(() => null),
-    ]).then(([projects, analytics]) => {
+      fetch('/api/experiences').then((r) => r.json()).catch(() => []),
+      fetch('/api/skills').then((r) => r.json()).catch(() => []),
+    ]).then(([projects, analytics, experiences, skills]) => {
+      const allProjects = Array.isArray(projects) ? projects : [];
+      const freeTools = allProjects.filter((p) => p.tag === 'freeTool');
+      const portfolioProjects = allProjects.filter((p) => p.tag !== 'freeTool');
+
       const categories = {};
-      (projects || []).forEach((p) => {
+      portfolioProjects.forEach((p) => {
         categories[p.category] = (categories[p.category] || 0) + 1;
       });
+
       setStats({
-        totalProjects: projects?.length || 0,
+        totalProjects: portfolioProjects.length,
+        totalTools: freeTools.length,
+        totalExperiences: Array.isArray(experiences) ? experiences.length : 0,
+        totalSkills: Array.isArray(skills) ? skills.length : 0,
         categories,
         totalViews: analytics?.totalViews || 0,
         todayViews: analytics?.todayViews || 0,
@@ -25,10 +35,12 @@ export default function AdminDashboard() {
   }, []);
 
   const cards = [
-    { label: 'Jumlah Proyek', value: stats?.totalProjects || 0, icon: FaProjectDiagram, color: '#D6FF01' },
-    { label: 'Kategori', value: Object.keys(stats?.categories || {}).length, icon: FaTh, color: '#3b82f6' },
-    { label: 'Total Kunjungan', value: stats?.totalViews || 0, icon: FaEye, color: '#10b981' },
-    { label: 'Kunjungan Hari Ini', value: stats?.todayViews || 0, icon: FaExclamationTriangle, color: '#f59e0b' },
+    { label: 'Proyek Portofolio', value: stats?.totalProjects || 0, icon: FaProjectDiagram, color: '#D6FF01' },
+    { label: 'Jejak Pengalaman', value: stats?.totalExperiences || 0, icon: FaBriefcase, color: '#38bdf8' },
+    { label: 'Keahlian & Tools', value: stats?.totalSkills || 0, icon: FaLayerGroup, color: '#a855f7' },
+    { label: 'Tools Gratis (/tools)', value: stats?.totalTools || 0, icon: FaTools, color: '#10b981' },
+    { label: 'Total Kunjungan', value: stats?.totalViews || 0, icon: FaEye, color: '#f59e0b' },
+    { label: 'Kunjungan Hari Ini', value: stats?.todayViews || 0, icon: FaExclamationTriangle, color: '#ef4444' },
   ];
 
     const categoryLabels = {
