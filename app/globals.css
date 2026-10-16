@@ -1149,3 +1149,27 @@ select option {
     height: 180px;
   }
 }
+
+/* Nav Tools Highlight Link */
+.nav-highlight-link {
+  background: rgba(214, 255, 1, 0.08);
+  border: 1px solid rgba(214, 255, 1, 0.25);
+  border-radius: 20px;
+  padding: 6px 14px !important;
+  color: var(--accent) !important;
+  transition: all 0.2s ease;
+}
+
+.nav-highlight-link:hover {
+  background: rgba(214, 255, 1, 0.18);
+  box-shadow: 0 0 15px rgba(214, 255, 1, 0.25);
+  transform: translateY(-1px);
+}
+
+/* Tool card hover effects */
+.tool-card:hover {
+  border-color: rgba(214, 255, 1, 0.4) !important;
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(214, 255, 1, 0.1);
+}
+

@@ -2,7 +2,7 @@ import prisma from '@/lib/prisma';
 import { getSession } from '@/lib/auth';
 import { sanitizeObject, isValidUrl } from '@/lib/sanitize';
 
-const PROJECT_TAGS = ['mainProject', 'funProject'];
+const PROJECT_TAGS = ['mainProject', 'funProject', 'freeTool'];
 
 export async function GET(request) {
   try {

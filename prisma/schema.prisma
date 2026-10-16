@@ -16,6 +16,7 @@ model Profile {
   heroPhotoUrl String?
   resumeUrl    String?
   contactEmail String?
+  whatsappNumber String?
   updatedAt    DateTime @updatedAt
 
   @@map("profiles")
@@ -104,6 +105,19 @@ model ErrorLog {
   @@map("error_logs")
 }
 
+model Experience {
+  id           Int            @id @default(autoincrement())
+  title        String
+  organization String
+  period       String
+  description  String
+  type         ExperienceType @default(work)
+  displayOrder Int            @default(0)
+  createdAt    DateTime       @default(now())
+
+  @@map("experiences")
+}
+
 enum ProjectCategory {
   website
   android
@@ -116,6 +130,13 @@ enum ProjectCategory {
 enum ProjectTag {
   mainProject
   funProject
+  freeTool
+}
+
+enum ExperienceType {
+  work
+  education
+  certification
 }
 
 enum MediaType {

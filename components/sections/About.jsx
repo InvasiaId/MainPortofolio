@@ -3,11 +3,15 @@
 import { useRef, useEffect } from 'react';
 import { FaDownload } from 'react-icons/fa';
 
-export default function About({ profile }) {
+export default function About({ profile, stats }) {
   const ref = useRef(null);
   const resumeDownloadUrl = profile?.resumeUrl
     ? `${profile.resumeUrl}${profile.resumeUrl.includes('?') ? '&' : '?'}download=1`
     : null;
+
+  const yearsExp = stats?.yearsExp || '3+';
+  const projectCount = stats?.projectCount ? `${stats.projectCount}+` : '15+';
+  const skillCount = stats?.skillCount ? `${stats.skillCount}` : '10+';
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -50,16 +54,16 @@ export default function About({ profile }) {
 
             <div className="about-stats">
               <div className="stat-card glass">
-                <div className="stat-number gradient-text">3+</div>
+                <div className="stat-number gradient-text">{yearsExp}</div>
                 <div className="stat-label">Tahun Pengalaman</div>
               </div>
               <div className="stat-card glass">
-                <div className="stat-number gradient-text">10+</div>
+                <div className="stat-number gradient-text">{projectCount}</div>
                 <div className="stat-label">Proyek Selesai</div>
               </div>
               <div className="stat-card glass">
-                <div className="stat-number gradient-text">11</div>
-                <div className="stat-label">Kategori Keahlian</div>
+                <div className="stat-number gradient-text">{skillCount}</div>
+                <div className="stat-label">Teknologi & Keahlian</div>
               </div>
             </div>
 

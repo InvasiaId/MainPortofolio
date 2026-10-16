@@ -2,12 +2,12 @@ import './globals.css';
 import Script from 'next/script';
 
 export const metadata = {
-  title: 'Portofolio — Pengembang & Desainer',
-  description: 'Portofolio pengembang dan desainer yang menampilkan karya situs web, aplikasi seluler, desain 3D, video, desain grafis, serta perangkat keras dan IoT.',
-  keywords: ['portfolio', 'developer', 'designer', '3D', 'web', 'android', 'IoT'],
+  title: 'M. Dandi Fadli — Full-Stack Developer & 3D Designer',
+  description: 'Portofolio M. Dandi Fadli: Pengembang Full-Stack, Desain 3D & AR, Aplikasi Mobile, serta Perangkat Keras & IoT.',
+  keywords: ['M. Dandi Fadli', 'portfolio', 'developer', 'full stack developer', 'designer', '3D', 'web', 'android', 'IoT', 'augmented reality'],
   openGraph: {
-    title: 'Portofolio — Pengembang & Desainer',
-    description: 'Menampilkan karya saya di bidang situs web, aplikasi seluler, desain 3D, video, desain grafis, dan perangkat keras.',
+    title: 'M. Dandi Fadli — Full-Stack Developer & 3D Designer',
+    description: 'Menampilkan karya dan proyek di bidang situs web, aplikasi seluler, desain 3D & animasi, serta proyek IoT.',
     type: 'website',
   },
 };

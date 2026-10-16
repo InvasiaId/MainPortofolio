@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { FaLinkedin, FaGithub, FaDribbble, FaInstagram, FaTiktok } from 'react-icons/fa';
+import { FaLinkedin, FaGithub, FaDribbble, FaInstagram, FaTiktok, FaWhatsapp } from 'react-icons/fa';
 
 const SOCIAL_ICONS = {
   linkedin: FaLinkedin,
@@ -9,6 +9,7 @@ const SOCIAL_ICONS = {
   dribbble: FaDribbble,
   instagram: FaInstagram,
   tiktok: FaTiktok,
+  whatsapp: FaWhatsapp,
 };
 
 function ParticleCanvas() {

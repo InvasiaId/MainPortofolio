@@ -1,10 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const pathname = usePathname();
+  const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -15,35 +19,60 @@ export default function Navbar() {
   const links = [
     { href: '#hero', label: 'Beranda' },
     { href: '#about', label: 'Tentang' },
+    { href: '#experience', label: 'Pengalaman' },
     { href: '#skills', label: 'Keahlian' },
     { href: '#projects', label: 'Proyek' },
+    { href: '/tools', label: 'Tools Gratis 🎁', isPage: true },
     { href: '#contact', label: 'Kontak' },
   ];
 
-  const handleClick = (e, href) => {
-    e.preventDefault();
+  const handleNavClick = (e, link) => {
     setMenuOpen(false);
-    const target = document.querySelector(href);
-    if (target) {
-      target.scrollIntoView({ behavior: 'smooth' });
+    if (link.isPage) {
+      return;
+    }
+    e.preventDefault();
+    if (pathname === '/') {
+      const target = document.querySelector(link.href);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth' });
+      }
+    } else {
+      router.push(`/${link.href}`);
     }
   };
 
   return (
     <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
       <div className="container">
-        <a href="#hero" className="nav-logo gradient-text" onClick={(e) => handleClick(e, '#hero')}>
+        <Link
+          href="/"
+          className="nav-logo gradient-text"
+          onClick={(e) => {
+            if (pathname === '/') {
+              e.preventDefault();
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+          }}
+        >
           Portofolio
-        </a>
+        </Link>
 
         <ul className={`nav-links ${menuOpen ? 'open' : ''}`}>
-          {links.map((link) => (
-            <li key={link.href}>
-              <a href={link.href} onClick={(e) => handleClick(e, link.href)}>
-                {link.label}
-              </a>
-            </li>
-          ))}
+          {links.map((link) => {
+            const isActive = link.isPage && pathname === link.href;
+            return (
+              <li key={link.href}>
+                <Link
+                  href={link.isPage ? link.href : `/${link.href}`}
+                  className={`${isActive ? 'active' : ''} ${link.isPage ? 'nav-highlight-link' : ''}`}
+                  onClick={(e) => handleNavClick(e, link)}
+                >
+                  {link.label}
+                </Link>
+              </li>
+            );
+          })}
         </ul>
 
         <button

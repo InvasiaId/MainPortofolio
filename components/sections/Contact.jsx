@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { FaLinkedin, FaGithub, FaDribbble, FaInstagram, FaTiktok } from 'react-icons/fa';
+import { FaLinkedin, FaGithub, FaDribbble, FaInstagram, FaTiktok, FaWhatsapp } from 'react-icons/fa';
 import { rateLimit } from '@/lib/sanitize';
 
 const SOCIAL_ICONS = {
@@ -10,9 +10,10 @@ const SOCIAL_ICONS = {
   dribbble: FaDribbble,
   instagram: FaInstagram,
   tiktok: FaTiktok,
+  whatsapp: FaWhatsapp,
 };
 
-export default function Contact({ socialLinks }) {
+export default function Contact({ socialLinks, profile }) {
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const [status, setStatus] = useState('');
 
@@ -63,6 +64,31 @@ export default function Contact({ socialLinks }) {
               Jangan ragu untuk menghubungi saya jika ingin berkolaborasi, bekerja sama dalam proyek, atau sekadar berdiskusi santai.
               Saya selalu terbuka untuk membicarakan proyek baru, ide kreatif, maupun peluang menarik lainnya.
             </p>
+
+            {profile?.whatsappNumber && (
+              <div style={{ marginTop: '20px', marginBottom: '24px' }}>
+                <a
+                  href={`https://wa.me/${profile.whatsappNumber.replace(/[^0-9]/g, '')}?text=Halo%20Dandi,%20saya%20melihat%20portofolio%20Anda%20dan%20tertarik%20untuk%20berdiskusi.`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-outline"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    borderColor: '#25D366',
+                    color: '#25D366',
+                    padding: '10px 18px',
+                    borderRadius: 'var(--radius-md)',
+                    fontWeight: 600,
+                    textDecoration: 'none',
+                    transition: 'all 0.2s ease',
+                  }}
+                >
+                  <FaWhatsapp style={{ fontSize: '1.25rem' }} /> Chat via WhatsApp
+                </a>
+              </div>
+            )}
 
             {socialLinks && socialLinks.length > 0 && (
               <div className="contact-socials">

@@ -240,6 +240,7 @@ export default function AdminProjects() {
             <select style={s.input} value={form.tag} onChange={(e) => setForm({ ...form, tag: e.target.value })}>
               <option value="mainProject">Proyek Utama</option>
               <option value="funProject">Proyek Santai</option>
+              <option value="freeTool">🎁 Tools Gratis (/tools)</option>
             </select>
           </div>
 

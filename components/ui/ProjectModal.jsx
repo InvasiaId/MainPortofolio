@@ -149,7 +149,9 @@ export default function ProjectModal({ project, onClose }) {
             {categoryLabel}
           </span>
           <h2 className="modal-title">{project.title}</h2>
-          <p className="modal-description">{project.description}</p>
+          <div className="modal-description" style={{ whiteSpace: 'pre-line', lineHeight: '1.7', color: 'var(--text-secondary)' }}>
+            {project.description}
+          </div>
 
           {project.techStack?.length > 0 && (
             <div className="modal-tech">
@@ -159,12 +161,19 @@ export default function ProjectModal({ project, onClose }) {
             </div>
           )}
 
-          {/* Project links — only for website & android */}
-          {(project.category === 'website' || project.category === 'android') && (
+          {/* Project links — accessible for all categories */}
+          {(project.projectUrl || project.repoUrl) && (
             <div className="modal-links">
               {project.projectUrl && (
                 <a href={project.projectUrl} target="_blank" rel="noopener noreferrer" className="btn btn-primary">
-                  <FaExternalLinkAlt /> Lihat Proyek
+                  <FaExternalLinkAlt />{' '}
+                  {project.category === 'threeD'
+                    ? 'Lihat Model / Demo'
+                    : project.category === 'video'
+                    ? 'Tonton Video Penuh'
+                    : project.category === 'hardware'
+                    ? 'Lihat Demo / Skema'
+                    : 'Buka Proyek / Demo'}
                 </a>
               )}
               {project.repoUrl && (
