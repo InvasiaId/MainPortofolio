@@ -152,6 +152,12 @@ export default function Contact({ socialLinks, profile }) {
               {status === 'sending' ? 'Mengirim...' : status === 'sent' ? '✅ Terkirim!' : 'Kirim Pesan'}
             </button>
 
+            {status === 'sent' && (
+              <div style={{ marginTop: '14px', padding: '12px', borderRadius: '8px', background: 'rgba(16, 185, 129, 0.12)', border: '1px solid rgba(16, 185, 129, 0.3)', color: '#10b981', fontSize: '0.9rem', textAlign: 'center' }}>
+                🎉 Pesan berhasil terkirim! Terima kasih telah menghubungi saya.
+              </div>
+            )}
+
             {status && status !== 'sending' && status !== 'sent' && (
               <p style={{ color: '#ef4444', fontSize: '0.85rem', marginTop: '8px' }}>{status}</p>
             )}

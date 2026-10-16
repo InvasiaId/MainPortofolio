@@ -22,7 +22,6 @@ export default function Navbar() {
     { href: '#experience', label: 'Pengalaman' },
     { href: '#skills', label: 'Keahlian' },
     { href: '#projects', label: 'Proyek' },
-    { href: '/tools', label: 'Tools Gratis 🎁', isPage: true },
     { href: '#contact', label: 'Kontak' },
   ];
 

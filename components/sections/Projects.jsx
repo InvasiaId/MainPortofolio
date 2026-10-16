@@ -192,16 +192,15 @@ export default function Projects({ projects }) {
   const [activeFilter, setActiveFilter] = useState('all');
   const [selectedProject, setSelectedProject] = useState(null);
   const allProjects = projects || [];
-  const mainProjects = allProjects.filter((project) => !project.tag || project.tag === 'mainProject');
-  const funProjects = allProjects.filter((project) => project.tag === 'funProject');
+  const displayProjects = allProjects.filter((project) => project.tag !== 'freeTool');
 
-  const filteredMainProjects = useMemo(() => {
-    if (activeFilter === 'all') return mainProjects;
-    return mainProjects.filter((project) => project.category === activeFilter);
-  }, [mainProjects, activeFilter]);
+  const filteredProjects = useMemo(() => {
+    if (activeFilter === 'all') return displayProjects;
+    return displayProjects.filter((project) => project.category === activeFilter);
+  }, [displayProjects, activeFilter]);
 
   const availableCategories = Object.entries(CATEGORY_LABELS).filter(([key]) =>
-    key === 'all' || mainProjects.some((project) => project.category === key)
+    key === 'all' || displayProjects.some((project) => project.category === key)
   );
 
   return (
@@ -228,31 +227,12 @@ export default function Projects({ projects }) {
           </div>
 
           <ProjectCards
-            projects={filteredMainProjects}
+            projects={filteredProjects}
             onSelect={setSelectedProject}
-            emptyMessage={mainProjects.length ? 'Belum ada proyek dalam kategori ini.' : 'Tambahkan proyek utama melalui panel admin.'}
+            emptyMessage={displayProjects.length ? 'Belum ada proyek dalam kategori ini.' : 'Tambahkan proyek melalui panel admin.'}
           />
         </div>
       </section>
-
-      {funProjects.length > 0 && (
-        <section className="projects fun-projects" id="fun-projects">
-          <div className="container">
-            <div className="section-header">
-              <h2 className="section-title">
-                Proyek <span className="gradient-text">Santai</span>
-              </h2>
-              <p className="section-subtitle">Proyek santai yang saya buat untuk belajar dan bersenang-senang.</p>
-            </div>
-            <ProjectCards
-              projects={funProjects}
-              onSelect={setSelectedProject}
-              emptyMessage="Belum ada proyek santai."
-              carousel
-            />
-          </div>
-        </section>
-      )}
 
       {selectedProject && (
         <ProjectModal
