@@ -22,28 +22,36 @@ function ParticleCanvas() {
     let animationId;
     let particles = [];
     let mouse = { x: null, y: null };
+    let isVisible = true;
+
+    // Check prefers-reduced-motion
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      return;
+    }
 
     const resize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
+      createParticles();
     };
 
     const createParticles = () => {
       particles = [];
-      const count = Math.floor((canvas.width * canvas.height) / 15000);
+      const count = Math.min(60, Math.floor((canvas.width * canvas.height) / 18000));
       for (let i = 0; i < count; i++) {
         particles.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
-          vx: (Math.random() - 0.5) * 0.5,
-          vy: (Math.random() - 0.5) * 0.5,
+          vx: (Math.random() - 0.5) * 0.4,
+          vy: (Math.random() - 0.5) * 0.4,
           size: Math.random() * 2 + 1,
-          opacity: Math.random() * 0.5 + 0.1,
+          opacity: Math.random() * 0.4 + 0.1,
         });
       }
     };
 
     const animate = () => {
+      if (!isVisible) return;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       particles.forEach((p, i) => {
@@ -53,7 +61,6 @@ function ParticleCanvas() {
         if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
         if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
 
-        // Mouse interaction
         if (mouse.x !== null) {
           const dx = p.x - mouse.x;
           const dy = p.y - mouse.y;
@@ -69,16 +76,15 @@ function ParticleCanvas() {
         ctx.fillStyle = `rgba(214, 255, 1, ${p.opacity})`;
         ctx.fill();
 
-        // Connect nearby particles
         for (let j = i + 1; j < particles.length; j++) {
           const dx = p.x - particles[j].x;
           const dy = p.y - particles[j].y;
           const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 150) {
+          if (dist < 140) {
             ctx.beginPath();
             ctx.moveTo(p.x, p.y);
             ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = `rgba(214, 255, 1, ${0.1 * (1 - dist / 150)})`;
+            ctx.strokeStyle = `rgba(214, 255, 1, ${0.08 * (1 - dist / 140)})`;
             ctx.lineWidth = 0.5;
             ctx.stroke();
           }
@@ -87,6 +93,19 @@ function ParticleCanvas() {
 
       animationId = requestAnimationFrame(animate);
     };
+
+    // Pause animation when hero is scrolled out of view to save CPU and battery
+    const observer = new IntersectionObserver(([entry]) => {
+      isVisible = entry.isIntersecting;
+      if (isVisible) {
+        cancelAnimationFrame(animationId);
+        animationId = requestAnimationFrame(animate);
+      } else {
+        cancelAnimationFrame(animationId);
+      }
+    }, { threshold: 0.05 });
+
+    observer.observe(canvas);
 
     const handleMouse = (e) => {
       mouse.x = e.clientX;
@@ -103,11 +122,11 @@ function ParticleCanvas() {
     canvas.addEventListener('mouseleave', handleMouseLeave);
 
     resize();
-    createParticles();
-    animate();
+    animationId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(animationId);
+      observer.disconnect();
       window.removeEventListener('resize', resize);
       canvas.removeEventListener('mousemove', handleMouse);
       canvas.removeEventListener('mouseleave', handleMouseLeave);
@@ -203,7 +222,7 @@ export default function Hero({ profile, socialLinks }) {
           <div className="hero-image">
             <div className="hero-image-wrapper">
               {profile?.heroPhotoUrl ? (
-                <img src={profile.heroPhotoUrl} alt={profile.name || 'Foto profil'} />
+                <img src={profile.heroPhotoUrl} alt={profile.name || 'Foto profil'} fetchPriority="high" decoding="async" />
               ) : (
                 <div className="hero-image-placeholder">
                   <FaUser style={{ fontSize: '3rem', opacity: 0.4 }} />

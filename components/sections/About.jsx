@@ -42,7 +42,7 @@ export default function About({ profile, stats }) {
           <div className="about-image">
             <div className="about-image-frame">
               {profile?.photoUrl ? (
-                <img src={profile.photoUrl} alt={profile?.name || 'Foto profil'} />
+                <img src={profile.photoUrl} alt={profile?.name || 'Foto profil'} loading="lazy" decoding="async" />
               ) : (
                 <FaUser style={{ fontSize: '3rem', opacity: 0.35 }} />
               )}

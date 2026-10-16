@@ -120,7 +120,7 @@ function ProjectCards({ projects, onSelect, emptyMessage, carousel = false }) {
       >
         <div className="project-card-image">
           {thumbnail ? (
-            <img src={thumbnail.mediaUrl} alt={project.title} loading="lazy" draggable="false" />
+            <img src={thumbnail.mediaUrl} alt={project.title} loading="lazy" decoding="async" draggable="false" />
           ) : (
             <div className="project-card-image-placeholder">
               {(() => {
@@ -148,6 +148,9 @@ function ProjectCards({ projects, onSelect, emptyMessage, carousel = false }) {
               )}
             </div>
           )}
+          <div className="project-card-action">
+            Lihat Detail & Demo →
+          </div>
         </div>
       </div>
     );

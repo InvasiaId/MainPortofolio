@@ -1,24 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { FaExternalLinkAlt, FaGithub, FaChevronLeft, FaChevronRight, FaTimes } from 'react-icons/fa';
+import { FaExternalLinkAlt, FaGithub, FaChevronLeft, FaChevronRight, FaTimes, FaCode, FaCube, FaMobileAlt, FaVideo, FaPalette, FaMicrochip, FaFolder } from 'react-icons/fa';
 
 export default function ProjectModal({ project, onClose }) {
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
   const mediaItems = project.media || [];
   const videos = mediaItems.filter((item) => item.mediaType === 'video');
-
-  useEffect(() => {
-    const handleEsc = (e) => {
-      if (e.key === 'Escape') onClose();
-    };
-    document.addEventListener('keydown', handleEsc);
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.removeEventListener('keydown', handleEsc);
-      document.body.style.overflow = '';
-    };
-  }, [onClose]);
 
   const nextMedia = () => {
     if (mediaItems.length > 0) {
@@ -31,6 +19,20 @@ export default function ProjectModal({ project, onClose }) {
       setCurrentMediaIndex((prev) => (prev - 1 + mediaItems.length) % mediaItems.length);
     }
   };
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') onClose();
+      if (e.key === 'ArrowLeft') prevMedia();
+      if (e.key === 'ArrowRight') nextMedia();
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = '';
+    };
+  }, [onClose, mediaItems.length]);
 
   const categoryLabels = {
     website: 'Situs Web',
@@ -104,6 +106,22 @@ export default function ProjectModal({ project, onClose }) {
                 <button className="gallery-nav gallery-next" onClick={nextMedia} aria-label="Media berikutnya">
                   <FaChevronRight />
                 </button>
+                <span style={{
+                  position: 'absolute',
+                  bottom: '12px',
+                  right: '12px',
+                  background: 'rgba(10, 14, 39, 0.75)',
+                  backdropFilter: 'blur(4px)',
+                  padding: '4px 10px',
+                  borderRadius: '12px',
+                  fontSize: '0.8rem',
+                  color: 'var(--text-secondary)',
+                  fontWeight: 500,
+                  pointerEvents: 'none',
+                  zIndex: 2,
+                }}>
+                  {currentMediaIndex + 1} / {mediaItems.length}
+                </span>
               </>
             )}
           </div>
@@ -116,9 +134,11 @@ export default function ProjectModal({ project, onClose }) {
                   onClick={() => setCurrentMediaIndex(i)}
                 >
                   {m.mediaType === 'video' ? (
-                     <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0a0e27', fontSize: '1.2rem' }}>🎬</div>
+                     <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0a0e27', fontSize: '1.2rem', color: 'var(--text-muted)' }}>
+                       <FaVideo />
+                     </div>
                   ) : (
-                    <img src={m.mediaUrl} alt={`Pratinjau ${i + 1}`} />
+                    <img src={m.mediaUrl} alt={`Pratinjau ${i + 1}`} loading="lazy" decoding="async" />
                   )}
                 </div>
               ))}
@@ -128,9 +148,18 @@ export default function ProjectModal({ project, onClose }) {
       );
     }
 
+    const categoryIcons = {
+      website: <FaCode />,
+      android: <FaMobileAlt />,
+      threeD: <FaCube />,
+      video: <FaVideo />,
+      graphic: <FaPalette />,
+      hardware: <FaMicrochip />,
+    };
+
     return (
-      <div className="modal-gallery" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '4rem', color: 'var(--text-muted)' }}>
-        {project.category === 'website' ? '🌐' : project.category === 'android' ? '📱' : project.category === 'threeD' ? '🎨' : project.category === 'video' ? '🎬' : project.category === 'graphic' ? '🖼️' : '⚙️'}
+      <div className="modal-gallery" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '3.5rem', color: 'var(--text-muted)' }}>
+        {categoryIcons[project.category] || <FaFolder />}
       </div>
     );
   };

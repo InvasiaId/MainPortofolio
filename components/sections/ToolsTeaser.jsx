@@ -1,5 +1,3 @@
-'use client';
-
 import Link from 'next/link';
 import { FaTools, FaArrowRight, FaGift } from 'react-icons/fa';
 

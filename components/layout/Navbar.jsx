@@ -7,14 +7,36 @@ import { usePathname, useRouter } from 'next/navigation';
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState('#hero');
   const pathname = usePathname();
   const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  useEffect(() => {
+    if (pathname !== '/') return;
+
+    const sectionIds = ['hero', 'about', 'experience', 'skills', 'projects', 'contact'];
+    const handleScrollSpy = () => {
+      const scrollPosition = window.scrollY + 140;
+
+      for (let i = sectionIds.length - 1; i >= 0; i--) {
+        const el = document.getElementById(sectionIds[i]);
+        if (el && el.offsetTop <= scrollPosition) {
+          setActiveSection(`#${sectionIds[i]}`);
+          break;
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScrollSpy, { passive: true });
+    handleScrollSpy();
+    return () => window.removeEventListener('scroll', handleScrollSpy);
+  }, [pathname]);
 
   const links = [
     { href: '#hero', label: 'Beranda' },
@@ -59,7 +81,10 @@ export default function Navbar() {
 
         <ul className={`nav-links ${menuOpen ? 'open' : ''}`}>
           {links.map((link) => {
-            const isActive = link.isPage && pathname === link.href;
+            const isActive = link.isPage
+              ? pathname === link.href
+              : (pathname === '/' && activeSection === link.href);
+
             return (
               <li key={link.href}>
                 <Link
@@ -90,6 +115,9 @@ export default function Navbar() {
           style={{
             position: 'fixed',
             inset: 0,
+            background: 'rgba(0, 0, 0, 0.65)',
+            backdropFilter: 'blur(4px)',
+            WebkitBackdropFilter: 'blur(4px)',
             zIndex: 99,
           }}
           onClick={() => setMenuOpen(false)}

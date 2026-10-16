@@ -1,5 +1,12 @@
 import './globals.css';
 import Script from 'next/script';
+import { Inter } from 'next/font/google';
+
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter',
+});
 
 export const metadata = {
   title: 'M. Dandi Fadli — Full-Stack Developer & 3D Designer',
@@ -14,11 +21,11 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="id">
+    <html lang="id" className={inter.variable}>
       <head>
         <Script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js" strategy="lazyOnload" crossOrigin="anonymous" />
       </head>
-      <body>
+      <body className={inter.className}>
         {children}
       </body>
     </html>
