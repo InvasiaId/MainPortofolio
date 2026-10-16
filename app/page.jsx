@@ -27,20 +27,23 @@ async function getData() {
       }),
     ]);
 
+    const displayProjects = projects.filter(p => p.tag !== 'freeTool');
+    const hasFreeTools = projects.some(p => p.tag === 'freeTool');
+
     const stats = {
-      projectCount: projects.length,
+      projectCount: displayProjects.length,
       skillCount: skills.length,
       yearsExp: '3+',
     };
 
-    return { profile, socialLinks, skills, projects, experiences, stats };
+    return { profile, socialLinks, skills, projects, experiences, stats, hasFreeTools };
   } catch {
-    return { profile: null, socialLinks: [], skills: [], projects: [], experiences: [], stats: { projectCount: 15, skillCount: 10, yearsExp: '3+' } };
+    return { profile: null, socialLinks: [], skills: [], projects: [], experiences: [], stats: { projectCount: 15, skillCount: 10, yearsExp: '3+' }, hasFreeTools: false };
   }
 }
 
 export default async function HomePage() {
-  const { profile, socialLinks, skills, projects, experiences, stats } = await getData();
+  const { profile, socialLinks, skills, projects, experiences, stats, hasFreeTools } = await getData();
 
   return (
     <>
@@ -51,7 +54,7 @@ export default async function HomePage() {
         <Experience experiences={experiences} />
         <Skills skills={skills} />
         <Projects projects={projects} />
-        <ToolsTeaser />
+        {hasFreeTools && <ToolsTeaser />}
         <Contact socialLinks={socialLinks} profile={profile} />
       </main>
       <Footer />

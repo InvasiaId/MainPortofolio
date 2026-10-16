@@ -122,6 +122,7 @@ model Experience {
   organization String
   period       String
   description  String
+  imageUrl     String?
   type         ExperienceType @default(work)
   displayOrder Int            @default(0)
   createdAt    DateTime       @default(now())

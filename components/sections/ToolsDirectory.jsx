@@ -236,6 +236,17 @@ export default function ToolsDirectory({ tools = [] }) {
             );
           })}
         </div>
+      ) : tools.length === 0 ? (
+        <div className="glass" style={{ textAlign: 'center', padding: '60px 20px', borderRadius: 'var(--radius-lg)' }}>
+          <div style={{ fontSize: '2.5rem', marginBottom: '12px' }}>🛠️</div>
+          <h3 style={{ fontSize: '1.25rem', marginBottom: '8px', color: 'var(--text-primary)' }}>Belum Ada Alat yang Dipublikasikan</h3>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', maxWidth: '480px', margin: '0 auto 20px auto' }}>
+            Alat-alat web dan utilitas digital baru saat ini sedang dalam tahap perancangan dan akan segera dirilis di sini.
+          </p>
+          <Link href="/" className="btn btn-outline" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+            <FaArrowLeft /> Kembali ke Portofolio
+          </Link>
+        </div>
       ) : (
         <div className="glass" style={{ textAlign: 'center', padding: '60px 20px', borderRadius: 'var(--radius-lg)' }}>
           <div style={{ fontSize: '2.5rem', marginBottom: '12px' }}>🔍</div>
